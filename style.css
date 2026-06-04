@@ -944,3 +944,131 @@ select.invalid-field {
     margin-top: 8px;
   }
 }
+
+/* --- Track page mobile readability fix --- */
+@media (max-width: 480px) {
+  .track-header {
+    padding: 18px 18px;
+  }
+
+  .back-link {
+    font-size: 1rem;
+  }
+
+  .track-header h2 {
+    font-size: 1.55rem;
+    margin-top: 8px;
+  }
+
+  .track-main {
+    padding: 20px 16px 30px;
+  }
+
+  .track-card,
+  .order-result-card {
+    padding: 22px;
+    border-radius: 22px;
+  }
+
+  .track-card h1 {
+    font-size: 1.75rem;
+    line-height: 1.2;
+  }
+
+  .track-subtitle {
+    font-size: 1.05rem;
+    line-height: 1.45;
+  }
+
+  .track-form input {
+    font-size: 1.05rem;
+    padding: 15px 16px;
+    min-height: 54px;
+  }
+
+  .track-form .btn-primary {
+    font-size: 1rem;
+    padding: 15px 20px;
+    min-height: 54px;
+  }
+}
+
+@media (max-width: 380px) {
+  .track-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .track-form .btn-primary {
+    width: 100%;
+  }
+}
+
+/* --- Track page mobile overflow fix --- */
+@media (max-width: 480px) {
+  .track-main {
+    padding-inline: 12px;
+  }
+
+  .track-card,
+  .order-result-card {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .track-form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .track-form input {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .track-form .btn-primary {
+    width: 100%;
+  }
+
+  .order-result-card h3,
+  .order-result-card p,
+  .order-result-card div {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .track-summary-table,
+  .track-items-table {
+    width: 100%;
+    table-layout: fixed;
+  }
+
+  .track-summary-table th,
+  .track-summary-table td,
+  .track-items-table th,
+  .track-items-table td {
+    padding: 10px 8px;
+    font-size: 0.9rem;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .track-items-table th:nth-child(1),
+  .track-items-table td:nth-child(1) {
+    width: 42px;
+  }
+
+  .track-items-table th:nth-child(3),
+  .track-items-table td:nth-child(3) {
+    width: 52px;
+    text-align: center;
+  }
+
+  .track-items-table th:nth-child(4),
+  .track-items-table td:nth-child(4) {
+    width: 72px;
+  }
+}
