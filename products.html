@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Products | Seller Dashboard</title>
+
+    <link rel="stylesheet" href="seller.css" />
+    <link rel="stylesheet" href="products.css" />
+
+    <script type="importmap">
+      {
+        "imports": {
+          "@supabase/supabase-js": "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"
+        }
+      }
+    </script>
+  </head>
+
+  <body>
+    <header class="page-header">
+      <div class="header-left">
+        <h1>My Products</h1>
+        <p class="subtitle">Manage your listings</p>
+      </div>
+      <div class="header-right">
+        <span>Total Items: <b id="product-count">0</b></span>
+
+        <button id="addNewBtn" class="btn-primary">+ Add Product</button>
+      </div>
+    </header>
+
+    <!-- MAIN GRID -->
+    <main class="content-area">
+      <div id="productGrid" class="netflix-grid">
+        <div class="loading-shimmer">Loading your collection...</div>
+      </div>
+    </main>
+
+    <script type="module" src="./products.js"></script>
+  </body>
+</html>

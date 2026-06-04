@@ -1,0 +1,536 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Track Order</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "@supabase/supabase-js": "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"
+        }
+      }
+    </script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="track-page">
+    <div class="app track-app">
+      <header class="header track-header">
+        <a href="mp.html" class="back-link">← Back to Shop</a>
+        <h2>Track Order</h2>
+      </header>
+
+      <main class="track-main">
+        <section class="track-card">
+          <h1>Track Your Order</h1>
+          <p class="track-subtitle">
+            Enter your order number to check the latest status.
+          </p>
+
+          <div class="track-form">
+            <input type="number" id="orderInput" placeholder="Enter Order #" />
+            <button id="trackBtn" class="btn-primary">Track</button>
+          </div>
+        </section>
+
+        <div id="result"></div>
+      </main>
+    </div>
+
+    <script type="module">
+      import { supabase } from "./supabaseClient.js";
+      import { showToast, hasValue } from "./ui.js";
+
+      function isValidUrl(value) {
+        if (!hasValue(value)) return false;
+
+        try {
+          new URL(value);
+          return true;
+        } catch {
+          return false;
+        }
+      }
+
+      function renderSellerContactButtons(seller) {
+        if (!seller) return "";
+        const sellerName = hasValue(seller.full_name) ? seller.full_name : "";
+
+        const buttons = [];
+
+        if (hasValue(seller.contact_number)) {
+          buttons.push(`
+            <a
+              class="seller-contact-btn"
+              href="tel:${seller.contact_number}"
+            >
+              Call/Text
+            </a>
+          `);
+        }
+
+        if (isValidUrl(seller.messenger_url)) {
+          buttons.push(`
+            <a
+              class="seller-contact-btn"
+              href="${seller.messenger_url}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Messenger
+            </a>
+          `);
+        }
+
+        if (hasValue(seller.viber_number)) {
+          buttons.push(`
+            <a
+              class="seller-contact-btn"
+              href="viber://chat?number=${seller.viber_number}"
+            >
+              Viber
+            </a>
+          `);
+        }
+
+        if (isValidUrl(seller.tiktok_url)) {
+          buttons.push(`
+            <a
+              class="seller-contact-btn"
+              href="${seller.tiktok_url}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              TikTok
+            </a>
+          `);
+        }
+
+        if (buttons.length === 0) return "";
+
+        return `
+        <div class="seller-contact-box">
+            <div class="seller-contact-title">
+              ${sellerName ? `Contact ${sellerName}` : "Need help with this order?"}
+            </div>
+            <div class="seller-contact-actions">
+              ${buttons.join("")}
+            </div>
+          </div>
+        `;
+      }
+
+      function openReviewForm({
+        productId,
+        orderId,
+        productName,
+        buyerId,
+        buyerName,
+        buttonEl,
+      }) {
+        const existingForm = document.querySelector(".review-form-box");
+        if (existingForm) existingForm.remove();
+
+        const formBox = document.createElement("div");
+        formBox.className = "review-form-box";
+
+        formBox.innerHTML = `
+          <h4>Review ${productName}</h4>
+
+          <label>
+            Rating
+            <select id="reviewRating">
+              <option value="">Select rating</option>
+              <option value="5">★★★★★ Excellent</option>
+              <option value="4">★★★★ Good</option>
+              <option value="3">★★★ Okay</option>
+              <option value="2">★★ Poor</option>
+              <option value="1">★ Bad</option>
+            </select>
+          </label>
+
+          <label>
+            Comment
+            <textarea
+              id="reviewComment"
+              rows="3"
+              placeholder="Write a short product review"
+            ></textarea>
+          </label>
+
+          <div class="review-form-actions">
+            <button type="button" id="submitReviewBtn">Submit Review</button>
+            <button type="button" id="cancelReviewBtn">Cancel</button>
+          </div>
+        `;
+
+        buttonEl.closest(".review-action-wrap").appendChild(formBox);
+
+        document
+          .getElementById("cancelReviewBtn")
+          .addEventListener("click", () => {
+            formBox.remove();
+          });
+
+        document
+          .getElementById("submitReviewBtn")
+          .addEventListener("click", async () => {
+            const rating = Number(
+              document.getElementById("reviewRating").value,
+            );
+            const comment = document
+              .getElementById("reviewComment")
+              .value.trim();
+
+            if (!rating) {
+              alert("Please select a rating.");
+              return;
+            }
+
+            if (!comment) {
+              alert("Please write a short review.");
+              return;
+            }
+
+            const { error } = await supabase.from("reviews").insert({
+              product_id: productId,
+              order_id: orderId,
+              buyer_id: buyerId,
+              buyer_name: buyerName || "Verified buyer",
+              rating,
+              comment,
+              status: "pending",
+            });
+
+            if (error) {
+              console.error("Review insert error:", error);
+
+              if (error.code === "23505") {
+                alert("You already submitted a review for this product.");
+                formBox.innerHTML = `
+                  <p class="review-success-message">
+                    You already submitted a review for this product.
+                  </p>
+                `;
+                return;
+              }
+
+              alert("Could not submit review. Please try again.");
+              return;
+            }
+
+            formBox.innerHTML = `
+            <p class="review-success-message">
+              Review submitted. Waiting for seller approval.
+            </p>
+          `;
+          });
+      }
+
+      async function fetchOrder(orderNumber) {
+        const resDiv = document.getElementById("result");
+        resDiv.innerHTML = `<div class="track-message">Searching...</div>`;
+
+        const orderNumberInt = parseInt(orderNumber, 10);
+
+        if (isNaN(orderNumberInt)) {
+          resDiv.innerHTML = `
+            <div class="track-message">
+              Please enter a valid numeric Order #.
+            </div>
+          `;
+          return;
+        }
+
+        const { data: order, error } = await supabase
+          .from("orders")
+          .select(
+            `
+            id,
+            seller_id,
+            buyer_id,
+            order_number,
+            status,
+            order_amt,
+            created_at
+          `,
+          )
+          .eq("order_number", orderNumberInt)
+          .maybeSingle();
+
+        if (error) {
+          console.error("Supabase Error:", error);
+          resDiv.innerHTML = `
+            <div class="track-message">
+              Database error occurred.
+            </div>
+          `;
+          return;
+        }
+
+        // Check if order exists
+        if (!order) {
+          resDiv.innerHTML = `
+            <div class="track-message">
+              Order not found. Please check the number and try again.
+            </div>
+          `;
+          return;
+        }
+
+        // fetch order_items using order.id
+        const { data: orderItems, error: itemsError } = await supabase
+          .from("order_items")
+          .select(
+            `
+            id,
+            order_id,
+            product_id,
+            quantity,
+            price,
+            products (
+              id,
+              name,
+              seller_id
+            )
+          `,
+          )
+          .eq("order_id", order.id);
+
+        if (itemsError) {
+          console.error(
+            "Order items error:",
+            JSON.stringify(itemsError, null, 2),
+          );
+          resDiv.innerHTML = `<div class="track-message">Could not load order items.</div>`;
+          return;
+        }
+
+        // Check existing reviews for this order
+        const { data: existingReviews, error: reviewsError } = await supabase
+          .from("reviews")
+          .select("product_id, status")
+          .eq("order_id", order.id);
+
+        if (reviewsError) {
+          console.error("Existing reviews fetch error:", reviewsError);
+        }
+
+        const reviewedProductIds = new Set(
+          (existingReviews || []).map((review) => review.product_id),
+        );
+
+        // collect seller IDs from orderItems, not order.order_items
+        const sellerIds = [
+          ...new Set(
+            orderItems
+              ?.map((item) => item.products?.seller_id)
+              .filter(hasValue),
+          ),
+        ];
+
+        let sellersByUserId = {};
+
+        if (sellerIds.length > 0) {
+          const { data: sellers, error: sellersError } = await supabase
+            .from("sellers")
+            .select(
+              `
+              user_id,
+              full_name,
+              contact_number,
+              messenger_url,
+              viber_number,
+              tiktok_url
+            `,
+            )
+            .in("user_id", sellerIds);
+
+          if (sellersError) {
+            console.error("Seller fetch error:", sellersError);
+          }
+
+          sellersByUserId =
+            sellers?.reduce((map, seller) => {
+              map[seller.user_id] = seller;
+              return map;
+            }, {}) || {};
+        }
+
+        const hasItems = Array.isArray(orderItems) && orderItems.length > 0;
+        const canReview = order.status === "completed";
+
+        const itemsHtml = hasItems
+          ? orderItems
+              .map((item, index) => {
+                const qty = Number(item.quantity || 0);
+                const price = Number(item.price || 0);
+                const subtotal = qty * price;
+                const product = item.products;
+                const alreadyReviewed = reviewedProductIds.has(item.product_id);
+
+                return `
+                  <tr class="track-item-row">
+                    <td>${index + 1}</td>
+                    <td>
+                      ${product?.name || "Item"}
+
+                      ${
+                        canReview && !alreadyReviewed
+                          ? `
+                            <div class="review-action-wrap">
+                              <button
+                                type="button"
+                                class="leave-review-btn"
+                                data-product-id="${item.product_id}"
+                                data-order-id="${order.id}"
+                                data-product-name="${product?.name || "Item"}"
+                              >
+                                Leave Review
+                              </button>
+                            </div>
+                          `
+                          : canReview && alreadyReviewed
+                            ? `
+                              <div class="review-action-wrap">
+                                <span class="review-submitted-note">
+                                  Review already submitted.
+                                </span>
+                              </div>
+                            `
+                            : ""
+                      }
+
+                    </td>
+                    <td>${qty}</td>
+                    <td>₱${price.toLocaleString()}</td>
+                    <td>₱${subtotal.toLocaleString()}</td>
+                  </tr>
+                `;
+              })
+              .join("")
+          : `
+              <tr>
+                <td colspan="5">No items found.</td>
+              </tr>
+            `;
+        const orderSellerId =
+          order.seller_id || orderItems?.[0]?.products?.seller_id;
+        const orderSeller = sellersByUserId[orderSellerId];
+
+        const sellerContactHtml = renderSellerContactButtons(orderSeller);
+
+        resDiv.innerHTML = `
+          <div class="order-result-card">
+            <h3>Order #${order.order_number}</h3>
+
+            <table class="track-summary-table">
+              <tbody>
+                <tr>
+                  <th>Status</th>
+                  <td>
+                    <span class="status-badge ${order.status}">
+                      ${order.status}
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <th>Total</th>
+                  <td>₱${Number(order.order_amt || 0).toLocaleString()}</td>
+                </tr>
+                <tr>
+                  <th>Date</th>
+                  <td>${new Date(order.created_at).toLocaleDateString()}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h4 style="margin-top: 18px;">Order Items</h4>
+            ${
+              hasItems && !canReview
+                ? `<p class="review-locked-note">Reviews become available after this order is marked completed.</p>`
+                : ""
+            }
+            <table class="track-items-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Product</th>
+                  <th>Qty</th>
+                  <th>Price</th>
+                  <th>Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${itemsHtml}
+
+                ${
+                  sellerContactHtml
+                    ? `
+                      <tr class="seller-contact-row">
+                        <td colspan="5" class="seller-contact-cell">
+                          ${sellerContactHtml}
+                        </td>
+                      </tr>
+                    `
+                    : ""
+                }
+              </tbody>  
+            </table>
+          </div>
+        `;
+        resDiv.onclick = async (e) => {
+          const btn = e.target.closest(".leave-review-btn");
+          if (!btn) return;
+
+          const productId = btn.dataset.productId;
+          const orderId = btn.dataset.orderId;
+          const productName = btn.dataset.productName;
+
+          let buyerName = "Verified buyer";
+
+          if (order.buyer_id) {
+            const { data: buyer, error: buyerError } = await supabase
+              .from("buyers")
+              .select("first_name, last_name, buyer_code")
+              .eq("id", order.buyer_id)
+              .maybeSingle();
+
+            if (buyerError) {
+              console.error("Buyer lookup error:", buyerError);
+            }
+
+            if (buyer) {
+              const fullName = [buyer.first_name, buyer.last_name]
+                .filter(hasValue)
+                .join(" ");
+
+              buyerName = fullName || buyer.buyer_code || "Verified buyer";
+            }
+          }
+
+          openReviewForm({
+            productId,
+            orderId,
+            productName,
+            buyerId: order.buyer_id || null,
+            buyerName: "Verified buyer",
+            buttonEl: btn,
+          });
+        };
+      }
+      // --- Logic to run when the page loads ---
+
+      // URL check
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get("id");
+      if (id) {
+        document.getElementById("orderInput").value = id;
+        fetchOrder(id);
+      }
+
+      // Button click
+      document.getElementById("trackBtn").onclick = () => {
+        fetchOrder(document.getElementById("orderInput").value);
+      };
+    </script>
+  </body>
+</html>

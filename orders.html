@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Orders | Seller Hub</title>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "@supabase/supabase-js": "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"
+        }
+      }
+    </script>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="seller.css" />
+
+    <style>
+      body {
+        display: none;
+      } /* Prevents flash of unstyled content */
+    </style>
+  </head>
+  <body>
+    <aside class="sidebar">
+      <h2>Seller Hub</h2>
+      <nav>
+        <a href="dashboard.html" class="nav-link">
+          <i data-lucide="layout-dashboard"></i> Dashboard
+        </a>
+        <a href="#" class="nav-link">
+          <i data-lucide="package"></i> My Products
+        </a>
+        <a href="orders.html" class="nav-link active">
+          <i data-lucide="shopping-cart"></i> Orders
+        </a>
+        <a href="#" class="nav-link" id="logoutBtn">
+          <i data-lucide="log-out"></i> Logout
+        </a>
+      </nav>
+    </aside>
+
+    <main>
+      <div class="welcome-section">
+        <h1 id="welcome-text">Orders</h1>
+        <p>Manage and track your customer purchases here.</p>
+      </div>
+
+      <div class="card table-container">
+        <div class="table-header">
+          <h3>All Orders</h3>
+        </div>
+        <div class="table-wrapper">
+          <table class="order-table">
+            <thead>
+              <tr>
+                <th>Order #</th>
+                <th>Status</th>
+                <th>Items</th>
+                <th>Total Amount</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="orders-list"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+    <script type="module">
+      import { checkAuthAndOnboarding } from "./auth-guard.js";
+      import { fetchMyOrders } from "./orders.js";
+      import { formatOrderNumber, formatCurrency } from "./ui.js";
+      import { supabase } from "./supabaseClient.js";
+
+      // 1. Unified Initialization
+      async function initOrders() {
+        try {
+          // Guard: Verify user & seller status
+          await checkAuthAndOnboarding();
+
+          // Load: Fetch data
+          await loadOrders();
+
+          // Setup: Event listeners
+          setupLogout();
+        } catch (error) {
+          console.error("Initialization failed:", error);
+        }
+      }
+
+      // 2. Data Loading Logic
+      async function loadOrders() {
+        const orders = await fetchMyOrders();
+        const container = document.getElementById("orders-list");
+
+        if (!orders || orders.length === 0) {
+          container.innerHTML =
+            "<tr><td colspan='5'>No orders found.</td></tr>";
+        } else {
+          container.innerHTML = orders
+            .map((order) => {
+              const displayId = formatOrderNumber(order.order_number);
+              const displayAmt = formatCurrency(order.order_amt);
+
+              const itemsHtml =
+                order.order_items
+                  ?.map(
+                    (item) => `
+                  <div style="margin-bottom: 4px; font-size: 0.85rem; line-height: 1.2;">
+                      <span style="font-weight: 600;">${item.quantity}x</span> 
+                      ${item.products?.name || "Item"}
+                  </div>
+              `,
+                  )
+                  .join("") || "No items";
+
+              return `
+                  <tr>
+                      <td style="vertical-align: top;"><strong>${displayId}</strong></td>
+                      <td style="vertical-align: top;"><span class="badge ${order.status}">${order.status}</span></td>
+                      <td style="vertical-align: top;">${itemsHtml}</td>
+                      <td style="vertical-align: top;">${displayAmt}</td>
+                      <td style="vertical-align: top;"><button class="btn-sm">View Details</button></td>
+                  </tr>
+              `;
+            })
+            .join("");
+        }
+        lucide.createIcons();
+      }
+
+      // 3. Logout Handler
+      function setupLogout() {
+        document
+          .getElementById("logoutBtn")
+          .addEventListener("click", async (e) => {
+            e.preventDefault();
+            const { error } = await supabase.auth.signOut();
+            if (error) {
+              alert("Error logging out: " + error.message);
+            } else {
+              window.location.href = "./seller-login.html";
+            }
+          });
+      }
+
+      // Execution
+      initOrders();
+    </script>
+  </body>
+</html>

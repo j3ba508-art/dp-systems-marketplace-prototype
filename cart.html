@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Cart - D&P Marketplace</title>
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="cart-page">
+    <div class="app">
+      <nav>
+        <a href="mp.html" class="back-link">← Products</a>
+      </nav>
+
+      <h1 id="cartTopTitle" tabindex="-1" style="outline: none">Your Cart</h1>
+
+      <div class="cart-items">
+        <div id="cart"></div>
+      </div>
+
+      <footer class="cart-footer">
+        <div class="buyer-box" id="buyerBox">
+          <h3>Buyer Information</h3>
+          <input
+            id="buyerCodeInput"
+            class="custom-input highlight"
+            placeholder="Buyer Code (Returning Customers)"
+          />
+
+          <div class="form-grid">
+            <input
+              id="firstName"
+              class="custom-input"
+              placeholder="First Name"
+            />
+            <input id="lastName" class="custom-input" placeholder="Last Name" />
+
+            <select id="birthMonth" class="custom-input">
+              <option value="">Birth Month</option>
+              <option value="01">Jan</option>
+              <option value="02">Feb</option>
+              <option value="03">Mar</option>
+              <option value="04">Apr</option>
+              <option value="05">May</option>
+              <option value="06">Jun</option>
+              <option value="07">Jul</option>
+              <option value="08">Aug</option>
+              <option value="09">Sep</option>
+              <option value="10">Oct</option>
+              <option value="11">Nov</option>
+              <option value="12">Dec</option>
+            </select>
+            <input
+              id="favoriteWord"
+              class="custom-input"
+              placeholder="Favorite word"
+            />
+            <input
+              id="mobilePhone"
+              class="custom-input"
+              placeholder="09XXXXXXXXX"
+            />
+            <input
+              id="email"
+              class="custom-input"
+              placeholder="Email Address"
+            />
+            <textarea
+              id="shippingAddress"
+              class="custom-input"
+              placeholder="Shipping Address"
+            ></textarea>
+            <textarea
+              id="sellerMessage"
+              class="custom-input"
+              placeholder="Message for seller (optional)"
+            ></textarea>
+          </div>
+
+          <button id="checkoutBtn" class="btn-primary">Checkout (₱0.00)</button>
+        </div>
+      </footer>
+    </div>
+    <script type="module" src="./app-cart.js"></script>
+  </body>
+</html>

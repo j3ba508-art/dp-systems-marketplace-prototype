@@ -1,0 +1,370 @@
+/* ==========================================================================
+   1. GLOBAL FOUNDATIONS & RESET
+   ========================================================================== */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #141414; /* Netflix deep black */
+    color: #ffffff;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Ensures all interactive elements use the professional font stack */
+input, textarea, button {
+    font-family: inherit;
+}
+
+/* ==========================================================================
+   2. NAVIGATION BAR
+   ========================================================================== */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 4%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-left { 
+    display: flex; 
+    align-items: center; 
+    gap: 2rem; 
+}
+
+.brand-logo {
+    color: #e50914; /* Netflix Red */
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+    margin-left: 30px;
+}
+
+.nav-links a, .nav-item {
+    text-decoration: none;
+    color: #e5e5e5;
+    font-size: 0.85rem;
+    transition: color 0.3s;
+}
+
+.nav-item:hover, .nav-item.active { 
+    color: #fff; 
+    font-weight: 500; 
+}
+
+.btn-add-netflix {
+    background: #e50914;
+    color: white;
+    border: none;
+    padding: 6px 15px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+/* ==========================================================================
+   3. THE NETFLIX WannaBe SHELF (GRID & CARDS)
+   ========================================================================== */
+.content-area {
+    padding: 2rem 4%;
+}
+
+.shelf-title {
+    font-size: 1.5rem;
+    color: #e5e5e5;
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.netflix-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-bottom: 3rem;
+}
+
+/* Individual Card Styling */
+.product-card {
+    position: relative;
+    flex: 0 0 calc(50% - 1rem); /* 2 per row on mobile */
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    background: #181818;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+/* Hover Zoom Effect */
+.product-card:hover {
+    transform: scale(1.05);
+    z-index: 2;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+}
+
+/* Card Image Logic */
+.image-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #2f2f2f;
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Status Badges */
+.badge-low-stock {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: #e50914;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 2px;
+}
+
+.badge-draft {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    color: black;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 2px;
+}
+
+/* Card Text Info */
+.product-info-overlay { padding: 12px; }
+.product-title-row { display: flex; justify-content: space-between; align-items: center; }
+.product-name { font-size: 0.9rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.product-price { color: #46d369; font-weight: bold; font-size: 0.9rem; }
+.product-meta { font-size: 0.75rem; color: #808080; margin-top: 4px; }
+
+/* Responsive Grid Adjustments */
+@media (min-width: 768px)  { .product-card { flex: 0 0 calc(33.33% - 1rem); } }
+@media (min-width: 1100px) { .product-card { flex: 0 0 calc(20% - 1rem); } }
+
+/* ==========================================================================
+   4. MODAL SYSTEM (OVERLAY & FORMS)
+   ========================================================================== */
+.overlay {
+    position: fixed;
+    inset:0;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    padding: 16px;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(10px);
+    box-sizing: border-box;
+}
+
+.overlay.hidden {
+    display: none !important;
+}
+
+.overlay-content {
+    background: #181818;
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+    padding: 28px 36px;
+    width: 95%;
+    max-width: 650px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    box-sizing: border-box;
+}
+
+.overlay-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    line-height: 1;
+}
+
+/* Form Layouts */
+.form-group { display: flex; flex-direction: column; margin-bottom: 1.6rem; }
+.form-row { display: flex; gap: 24px; margin-bottom: 16px; }
+.form-group label { font-size: 0.8rem; color: #b3b3b3; margin-bottom: 0.5rem; }
+
+#p-desc {
+  min-height: 90px;
+  max-height: 110px;
+}
+
+/* Input & Textarea Styling */
+.form-group input, 
+#productForm textarea {
+    background: #333;
+    border: 1px solid #444;
+    color: white;
+    padding: 12px;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.3s, background-color 0.3s;
+}
+
+.form-group input:focus,
+#productForm textarea:focus {
+    background: #444;
+    border-color: #e50914;
+    outline: none;
+}
+
+/* ==========================================================================
+   5. IMAGE UPLOAD & DROPZONE
+   ========================================================================== */
+.image-preview-box, .image-drop-zone {
+    min-height: 150px;
+    max-height: 180px;
+    width: 100%;
+    height: 180px;
+    background: #222;
+    border: 2px dashed #444;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    cursor: pointer;
+    background-size: cover;
+    background-position: center;
+    transition: border-color 0.3s;
+    overflow: hidden;
+    position: relative;
+}
+
+.image-preview-box:hover, .image-drop-zone:hover {
+    border-color: #666;
+}
+
+.image-drop-zone.dragover {
+    border-color: #e50914;
+    background: #2a2a2a;
+}
+
+.image-preview-box span {
+    font-size: 0.8rem;
+    color: #808080;
+}
+
+#imagePreview {
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.visually-hidden-file {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.image-drop-zone {
+  cursor: pointer;
+}
+
+.form-actions {
+  position: relative;
+  z-index: 60;
+  bottom: 0; 
+  display: flex; 
+  justify-content: flex-end; 
+  gap: 1rem; 
+  margin-top: 2rem;
+  background: #181818;
+  padding-top: 12px;
+}
+
+#imgPreview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ==========================================================================
+   6. BUTTONS & ACTIONS
+   ========================================================================== */
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid #b3b3b3;
+    color: #b3b3b3;
+    padding: 12px 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-primary {
+    background: #e50914;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-primary:hover { background: #f40612; }
+.btn-primary:disabled { background: #701317; cursor: not-allowed; }
+
+.field-toast {
+  position: absolute;
+  top: -28px;
+  left: 0;
+  background: rgba(220, 53, 69, 0.95);
+  color: white;
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+  white-space: nowrap;
+  z-index: 9999;
+  animation: fadeIn 0.15s ease-in;
+}
+
+.image-drop-zone {
+  height: 140px;
+  max-height: 140px;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}

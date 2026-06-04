@@ -1,0 +1,225 @@
+<!doctype html>
+<html>
+  <head>
+    <script type="importmap">
+      {
+        "imports": {
+          "@supabase/supabase-js": "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"
+        }
+      }
+    </script>
+    <style>
+      /* Simple styling for the toast */
+      #toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px;
+        background: #333;
+        color: white;
+        border-radius: 5px;
+        display: none;
+        z-index: 9999;
+      }
+    </style>
+    <link rel="stylesheet" href="./seller-login.css" />
+  </head>
+  <body class="seller-auth-page">
+    <main class="seller-auth-shell">
+      <section class="seller-auth-card">
+        <div class="seller-auth-brand">Seller Hub</div>
+        <p class="seller-auth-kicker">Marketplace Seller Access</p>
+
+        <h1>Login / Signup</h1>
+        <p class="seller-auth-subtitle">
+          Sign in to manage products, orders, and seller dashboard tools.
+        </p>
+
+        <div id="toast"></div>
+
+        <form id="auth-form" class="seller-auth-form" onsubmit="return false;">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            placeholder="seller@example.com"
+            required
+          />
+
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            placeholder="Minimum 6 characters"
+            required
+          />
+
+          <button type="button" id="signInBtn">Get Started</button>
+
+          <a href="#" id="forgotPassword">Forgot password?</a>
+        </form>
+      </section>
+    </main>
+    <script type="module">
+      import { supabase } from "./supabaseClient.js";
+
+      const emailInput = document.getElementById("email");
+      const passwordInput = document.getElementById("password");
+      const authBtn = document.getElementById("signInBtn");
+      const authForm = document.getElementById("auth-form");
+      const toast = document.getElementById("toast");
+      const forgotPassword = document.getElementById("forgotPassword");
+
+      function showToast(message) {
+        toast.innerText = message;
+        toast.style.display = "block";
+        setTimeout(() => {
+          toast.style.display = "none";
+        }, 5000);
+      }
+
+      function setButtonsState(disabled) {
+        authBtn.disabled = disabled;
+        authBtn.innerText = disabled ? "Processing..." : "Get Started";
+      }
+
+      function getFriendlyErrorMessage(err) {
+        if (!err) return "An unknown error occurred.";
+        return err.message || JSON.stringify(err);
+      }
+
+      async function handleAuth(e) {
+        // 1. Immediate lockdown to stop the browser from refreshing
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+
+        const emailVal = emailInput.value.trim();
+        const passVal = passwordInput.value;
+
+        if (
+          !emailVal ||
+          !passVal ||
+          !emailVal.includes("@") ||
+          passVal.length < 6
+        ) {
+          showToast(
+            "Please enter a valid email and password (min 6 characters).",
+          );
+          return;
+        }
+
+        setButtonsState(true);
+
+        let authData = null;
+
+        try {
+          // 2. Attempt Sign Up
+          let { data: signUpData, error: signUpErr } =
+            await supabase.auth.signUp({
+              email: emailVal,
+              password: passVal,
+            });
+
+          // 3. If user exists, switch to Sign In
+          if (signUpErr && signUpErr.message.includes("already registered")) {
+            const { data: signInData, error: signInError } =
+              await supabase.auth.signInWithPassword({
+                email: emailVal,
+                password: passVal,
+              });
+
+            if (signInError) {
+              showToast("Incorrect password or login failed.");
+              setButtonsState(false);
+              return;
+            }
+            authData = signInData;
+          } else if (signUpErr) {
+            console.error("Auth Error:", signUpErr.message);
+            showToast(getFriendlyErrorMessage(signUpErr));
+            setButtonsState(false);
+            return;
+          } else {
+            authData = signUpData;
+          }
+
+          // 4. Verification Check: Does this user have a Seller Profile?
+          if (authData && authData.user) {
+            const { data: seller, error: sellerError } = await supabase
+              .from("sellers")
+              .select("id")
+              .eq("user_id", authData.user.id)
+              .maybeSingle();
+
+            if (sellerError) {
+              console.error("Database check failed:", sellerError.message);
+              showToast("Error verifying profile. Please try again.");
+              setButtonsState(false);
+              return;
+            }
+
+            // 5. Final Decision Redirect
+            if (seller) {
+              showToast("Welcome back! Signing you in...");
+              window.location.replace("dashboard.html");
+            } else {
+              showToast("Welcome! Creating your account...");
+              window.location.replace("onboarding.html");
+            }
+          } else {
+            console.error(
+              "Critical Error: Authentication data or user object is missing.",
+            );
+            showToast("Authentication failed. Missing user details.");
+            setButtonsState(false);
+          }
+        } catch (err) {
+          console.error("Critical Script Error:", err);
+          showToast("An unexpected error occurred.");
+          setButtonsState(false);
+        }
+      }
+
+      // --- ONE CENTRALIZED PLACE FOR LISTENERS ---
+
+      // 1. Click Listener
+      authBtn.addEventListener("click", (e) => {
+        handleAuth(e);
+      });
+
+      // 2. Enter Key Listener
+      authForm.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          handleAuth(e);
+        }
+      });
+
+      // 3. forgot password click listener
+      forgotPassword.addEventListener("click", async (e) => {
+        e.preventDefault();
+
+        const emailVal = emailInput.value.trim();
+
+        if (!emailVal || !emailVal.includes("@")) {
+          showToast("Please enter your email first.");
+          emailInput.focus();
+          return;
+        }
+
+        const { error } = await supabase.auth.resetPasswordForEmail(emailVal, {
+          redirectTo: `${window.location.origin}/marketplace/reset-password.html`,
+        });
+
+        if (error) {
+          console.error("Password reset error:", error.message);
+          showToast("Could not send password reset email.");
+          return;
+        }
+
+        showToast("Password reset email sent. Please check your inbox.");
+      });
+    </script>
+  </body>
+</html>

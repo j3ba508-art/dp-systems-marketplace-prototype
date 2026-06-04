@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Seller Hub | Dashboard</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "@supabase/supabase-js": "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"
+        }
+      }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="seller.css" />
+    <link rel="stylesheet" href="products.css" />
+    <style>
+      body {
+        display: none;
+      } /* Prevents Flash of Unstyled Content */
+      .view-section {
+        display: none !important;
+      }
+      .view-section.active {
+        display: block !important;
+      }
+    </style>
+  </head>
+  <body class="dashboard-layout">
+    <aside class="sidebar">
+      <h2>Seller Hub</h2>
+      <nav id="mainNav">
+        <a href="#" class="nav-link active" data-view="stats">
+          <i data-lucide="layout-dashboard"></i> Dashboard
+        </a>
+        <a href="#" class="nav-link" data-view="products">
+          <i data-lucide="package"></i> My Products
+        </a>
+        <a href="#" class="nav-link" data-view="orders">
+          <i data-lucide="shopping-cart"></i> Orders
+        </a>
+        <a href="#" class="nav-link" data-view="reviews">
+          <i data-lucide="star"></i> Reviews
+        </a>
+        <a href="#" class="nav-link" id="logoutBtn">
+          <i data-lucide="log-out"></i> Logout
+        </a>
+      </nav>
+    </aside>
+
+    <!-- REUSABLE OVERLAY (ADD + FUTURE EDIT) -->
+    <div id="productOverlay" class="overlay hidden">
+      <div class="overlay-content">
+        <div class="overlay-header">
+          <h2 id="overlayTitle">Add Product</h2>
+          <button id="closeOverlayBtn" class="btn-close">&times;</button>
+        </div>
+
+        <form id="productForm">
+          <input type="hidden" id="productId" />
+
+          <div class="form-group">
+            <label>Product Name</label>
+            <input type="text" id="p-name" required />
+          </div>
+
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="p-desc" rows="4"></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Price (₱)</label>
+              <input id="p-price" type="number" min="0" step="0.50" required />
+            </div>
+
+            <div class="form-group">
+              <label>Stock</label>
+              <input id="p-stock" type="number" min="0" step="1" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Image</label>
+            <input
+              type="file"
+              id="p-image"
+              class="visually-hidden-file"
+              accept="image/*"
+            />
+            <label class="image-drop-zone" id="imagePreview" for="p-image">
+              <span id="dropZoneText">Drag & Drop or Click to upload</span>
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" id="cancelBtn">Cancel</button>
+            <button
+              type="button"
+              id="deleteProductBtn"
+              class="danger-btn hidden"
+            >
+              Delete Product
+            </button>
+            <button type="submit" class="btn-primary">Save Product</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <main>
+      <section id="view-stats" class="view-section">
+        <header class="main-header">
+          <h1 id="welcomeHeader">Welcome back!</h1>
+        </header>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h3>Total Revenue</h3>
+            <p id="total-revenue">₱0</p>
+          </div>
+          <div class="stat-card">
+            <h3>Pending Orders</h3>
+            <p id="pending-orders">0</p>
+          </div>
+          <div class="stat-card">
+            <h3>Total Products</h3>
+            <p id="total-products">0</p>
+          </div>
+          <div class="stat-card">
+            <h3>Pending Reviews</h3>
+            <p id="pending-reviews">0</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-products" class="view-section">
+        <header class="main-header">
+          <h1>Inventory</h1>
+          <button
+            id="openAddModal"
+            class="btn-primary"
+            style="width: auto; padding: 8px 20px"
+          >
+            + Add Product
+          </button>
+        </header>
+        <div id="dashboardProductList" class="product-grid"></div>
+      </section>
+
+      <section id="view-orders" class="view-section">
+        <header class="main-header">
+          <h1>Orders</h1>
+        </header>
+        <div class="table-container">
+          <table class="orders-table">
+            <thead>
+              <tr>
+                <th>Order #</th>
+                <th>Status</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="orders-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+      <section id="view-reviews" class="view-section">
+        <header class="main-header">
+          <h1>Product Reviews</h1>
+        </header>
+
+        <div class="table-container">
+          <table class="orders-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Rating</th>
+                <th>Comment</th>
+                <th>Buyer</th>
+                <th>Review Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="reviews-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <div id="productModal" class="modal-overlay" style="display: none">
+      <div class="modal-content"></div>
+    </div>
+
+    <div id="deleteConfirmModal" class="modal-overlay hidden">
+      <div class="modal-content delete-modal">
+        <h2>Delete Product?</h2>
+
+        <p>
+          This product will be removed from your active inventory. Existing
+          orders will not be affected.
+        </p>
+
+        <div class="form-actions">
+          <button type="button" id="cancelDeleteBtn">Cancel</button>
+
+          <button type="button" id="confirmDeleteBtn" class="danger-btn">
+            Yes, Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { supabase } from "./supabaseClient.js";
+      import { checkAuthAndOnboarding } from "./auth-guard.js";
+      import { hasValue } from "./ui.js";
+      import {
+        initProductOverlay,
+        openProductOverlay,
+      } from "./productOverlay.js";
+
+      window.viewProductDetails = async function (id) {
+        const { data: product, error } = await supabase
+          .from("products")
+          .select("*")
+          .eq("id", id)
+          .single();
+
+        if (error) {
+          console.error("Failed to fetch product for edit:", error);
+          alert("Could not load product details.");
+          return;
+        }
+
+        openProductOverlay("edit", product);
+      };
+
+      // Global variable to keep track of the logged-in user
+      let currentUser = null;
+      let currentSellerId = null;
+
+      /**
+       * Unified Dashboard Initialization
+       * Sequence: Auth Check -> Set Identity -> Setup UI -> Load Data -> Reveal Page
+       */
+      async function initDashboard() {
+        if (window.lucide) {
+          lucide.createIcons();
+        }
+
+        try {
+          // 1. Security & Auth
+          await checkAuthAndOnboarding();
+          const { data: authData, error: authError } =
+            await supabase.auth.getUser();
+
+          if (authError || !authData?.user) {
+            window.location.href = "./seller-login.html";
+            return;
+          }
+          currentUser = authData.user;
+          document.getElementById("view-stats").classList.add("active");
+
+          initProductOverlay(currentUser.id);
+
+          document.getElementById("openAddModal").onclick = () => {
+            openProductOverlay("add");
+          };
+
+          // 2. Fetch Seller Name (Bridge the gap between Auth and Profile)
+          try {
+            const { data: profile } = await supabase
+              .from("sellers")
+              .select("id, seller_code")
+              .eq("user_id", currentUser.id)
+              .single();
+
+            if (profile) {
+              currentSellerId = profile.id;
+              // Try seller_code first, then name, then fallback to "Seller"
+              const displayName = profile.seller_code || "Seller";
+              document.getElementById("welcomeHeader").textContent =
+                `Welcome back, ${displayName}`;
+            }
+          } catch (profileErr) {
+            console.warn("Could not fetch seller code:", profileErr);
+          }
+
+          // 3. Setup Listeners
+          setupViewSwitcher();
+          setupLogout();
+          lucide.createIcons();
+
+          // 4. Hydrate initial view
+          document.getElementById("view-stats").classList.add("active");
+          await loadDashboardStats();
+        } catch (error) {
+          console.error("Critical Init Failure:", error);
+        }
+      }
+
+      // VIEW SWITCHER: Handles the logic when clicking sidebar links
+      function setupViewSwitcher() {
+        const links = document.querySelectorAll(".nav-link[data-view]");
+        links.forEach((link) => {
+          link.addEventListener("click", async (e) => {
+            e.preventDefault();
+            const view = link.getAttribute("data-view");
+
+            // 1. Update Sidebar UI
+            document
+              .querySelectorAll(".nav-link")
+              .forEach((l) => l.classList.remove("active"));
+            link.classList.add("active");
+
+            // 2. Toggle Section Visibility using ONLY classes
+            document
+              .querySelectorAll(".view-section")
+              .forEach((s) => s.classList.remove("active"));
+
+            const targetSection = document.getElementById(`view-${view}`);
+            if (targetSection) {
+              targetSection.classList.add("active");
+            }
+
+            // 3. Trigger Data Fetching
+            if (view === "stats") loadDashboardStats();
+            if (view === "products") renderNetflixProducts(currentUser);
+            if (view === "orders") await renderOrdersTable();
+            if (view === "reviews") await loadSellerReviews();
+          });
+        });
+      }
+
+      // STATS LOGIC: Updates the numbers on the main dashboard
+      async function loadProductCount() {
+        if (!currentUser) return;
+
+        const { count, error } = await supabase
+          .from("products")
+          .select("*", { count: "exact", head: true })
+          .eq("seller_id", currentUser.id)
+          .eq("is_active", true);
+
+        if (!error) {
+          document.getElementById("total-products").innerText = count || 0;
+        } else {
+          console.error("Product count error:", error);
+        }
+      }
+
+      async function loadPendingReviewCount() {
+        const pendingReviewsEl = document.getElementById("pending-reviews");
+
+        if (!pendingReviewsEl) return;
+
+        const { count, error } = await supabase
+          .from("reviews")
+          .select("*", { count: "exact", head: true })
+          .eq("status", "pending");
+
+        if (error) {
+          console.error("Pending reviews count error:", error);
+          pendingReviewsEl.innerText = "0";
+          return;
+        }
+
+        pendingReviewsEl.innerText = count || 0;
+      }
+
+      async function loadDashboardStats() {
+        if (!currentUser) return;
+
+        const { data: orders } = await supabase
+          .from("orders")
+          .select("order_amt, status")
+          .eq("seller_id", currentUser.id);
+
+        if (orders) {
+          const revenue = orders.reduce(
+            (acc, o) => acc + (o.order_amt || 0),
+            0,
+          );
+          const pending = orders.filter((o) => o.status === "pending").length;
+
+          document.getElementById("total-revenue").innerText =
+            `₱${revenue.toLocaleString()}`;
+          document.getElementById("pending-orders").innerText = pending;
+        }
+        await loadProductCount();
+        await loadPendingReviewCount();
+      }
+
+      // ORDERS LOGIC: Ported from standalone orders.html
+      async function renderOrdersTable() {
+        const ORDER_STATUSES = [
+          "pending",
+          "processing",
+          "shipped",
+          "completed",
+          "cancelled",
+        ];
+        const tbody = document.getElementById("orders-tbody");
+        tbody.innerHTML =
+          '<tr><td colspan="5" style="text-align:center;">Loading...</td></tr>';
+
+        const { data: orders, error } = await supabase
+          .from("orders")
+          .select("*, order_items(*, products(name))")
+          .eq("seller_id", currentUser.id)
+          .order("created_at", { ascending: false });
+
+        if (error || !orders || orders.length === 0) {
+          tbody.innerHTML =
+            '<tr><td colspan="5" style="text-align:center;">No orders found.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = orders
+          .map(
+            (order) => `
+          <tr>
+            <td><strong>#${order.order_number}</strong></td>
+            <td><span class="badge ${order.status.toLowerCase()}">${order.status}</span></td>
+            <td>${order.order_items.map((i) => `${i.products?.name} (x${i.quantity})`).join("<br>")}</td>
+            <td>₱${order.order_amt.toLocaleString()}</td>
+            <td>
+              <select class="status-select" data-order-id="${order.id}">
+
+                ${ORDER_STATUSES.map(
+                  (status) => `
+                      <option value="${status}" ${order.status === status ? "selected" : ""}>
+                        ${status}
+                      </option>
+                    `,
+                ).join("")}
+              </select>
+            </td>
+            
+          </tr>
+        `,
+          )
+          .join("");
+        document.querySelectorAll(".status-select").forEach((select) => {
+          select.addEventListener("change", async (e) => {
+            const orderId = e.target.dataset.orderId;
+            const newStatus = e.target.value;
+
+            const { data, error } = await supabase
+              .from("orders")
+              .update({ status: newStatus })
+              .eq("id", orderId)
+              .select("id, status, seller_id")
+              .maybeSingle();
+
+            if (error) {
+              console.error("Status update failed:", error);
+              alert("Could not update order status.");
+              return;
+            }
+
+            if (!data) {
+              console.warn(
+                "No order row was updated. Possible seller_id mismatch.",
+              );
+              alert("No matching order was updated.");
+              return;
+            }
+            await renderOrdersTable();
+            await loadDashboardStats();
+          });
+        });
+      }
+
+      async function loadSellerReviews() {
+        const tbody = document.getElementById("reviews-tbody");
+
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align:center;">Loading reviews...</td>
+          </tr>
+        `;
+
+        const { data: reviews, error } = await supabase
+          .from("reviews")
+          .select(
+            `
+            id,
+            product_id,
+            buyer_id,
+            buyer_name,
+            rating,
+            comment,
+            status,
+            created_at,
+            products (
+              id,
+              name,
+              seller_id
+            ),
+            buyers (
+              id,
+              first_name,
+              last_name,
+              buyer_code
+            )
+          `,
+          )
+          .order("created_at", { ascending: false });
+
+        if (error) {
+          console.error("Reviews fetch error:", error);
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="6" style="text-align:center;">
+                Could not load reviews.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        if (!reviews || reviews.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="6" style="text-align:center;">
+                No reviews found.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = reviews
+          .map((review) => {
+            const productName = review.products?.name || "Unknown product";
+            const joinedBuyerName = review.buyers
+              ? [review.buyers.first_name, review.buyers.last_name]
+                  .filter(hasValue)
+                  .join(" ")
+              : "";
+
+            const buyerName =
+              joinedBuyerName ||
+              review.buyers?.buyer_code ||
+              review.buyer_name ||
+              "Verified buyer";
+
+            const stars =
+              "★".repeat(review.rating) + "☆".repeat(5 - review.rating);
+
+            return `
+              <tr>
+                <td>${productName}</td>
+                <td>
+                  <span class="review-stars">${stars}</span>
+                  <small class="review-rating-number">${review.rating}/5</small>
+                </td>
+                <td>${review.comment}</td>
+                <td>${buyerName}</td>
+                <td>
+                  <span class="badge review-status-${review.status}">
+                    ${review.status}
+                  </span>
+                </td>
+                <td>
+                  <button
+                    type="button"
+                    class="review-approve-btn"
+                    data-review-id="${review.id}"
+                  >
+                    Approve
+                  </button>
+
+                  <button
+                    type="button"
+                    class="review-hide-btn"
+                    data-review-id="${review.id}"
+                  >
+                    Hide
+                  </button>
+                </td>
+              </tr>
+            `;
+          })
+          .join("");
+
+        document.querySelectorAll(".review-approve-btn").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            await updateReviewStatus(btn.dataset.reviewId, "approved");
+          });
+        });
+
+        document.querySelectorAll(".review-hide-btn").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            await updateReviewStatus(btn.dataset.reviewId, "hidden");
+          });
+        });
+      }
+
+      async function updateReviewStatus(reviewId, newStatus) {
+        const { error } = await supabase
+          .from("reviews")
+          .update({
+            status: newStatus,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", reviewId);
+
+        if (error) {
+          console.error("Review status update error:", error);
+          alert("Could not update review status.");
+          return;
+        }
+
+        await loadSellerReviews();
+      }
+
+      // PRODUCTS LOGIC: The Netflix-style grid
+      async function renderNetflixProducts(currentUser) {
+        const grid = document.getElementById("dashboardProductList");
+
+        // 1. Check if we have a user (Fixes the blank welcome/loading loop)
+        if (!currentUser) {
+          console.error("No seller session found");
+          return;
+        }
+
+        // Initial Loading State
+        grid.innerHTML =
+          '<p class="loading-state">Syncing your inventory...</p>';
+
+        try {
+          const { data: products, error } = await supabase
+            .from("products")
+            .select("*")
+            .eq("seller_id", currentUser.id)
+            .eq("is_active", true)
+            .order("created_at", { ascending: false })
+            .order("id", { ascending: false });
+
+          if (error) throw error;
+
+          if (!products || products.length === 0) {
+            grid.innerHTML =
+              '<p style="color:white; text-align:center;">No products found in your shop.</p>';
+            return;
+          }
+
+          // The Anti-Flicker Strategy
+          // Building as an array and joining once prevents the DOM from "jumping"
+          const productHtml = products
+            .map((p) => {
+              // GENERATE THE URL
+              const { data: urlData } = supabase.storage
+                .from("product-images")
+                .getPublicUrl(p.image_url);
+
+              return `
+                      <div class="product-card" data-id="${p.id}">
+                          <div class="card-img-container" style="background: #141414; height: 150px">
+                          <img src="${urlData.publicUrl}" 
+                              alt="${p.name}" 
+                              style="width: 100%; height: 100%; object-fit: cover; display: block !important;"
+                              onerror="this.src='https://via.placeholder.com/150?text=Check+Bucket+Policy'">
+                          </div>
+                          <div class="product-info-overlay">
+                              <div class="product-title-row">
+                                  <span class="product-name">${p.name}</span>
+                                  <span class="product-price">₱${Number(p.price).toLocaleString()}</span>
+                              </div>
+                              <div class="product-meta-row">
+                                <span class="product-stock">Stock: ${p.stock_quantity ?? 0}</span>
+                                ${Number(p.stock_quantity) <= 5 ? `<span class="low-stock">Low Stock</span>` : ""}
+                              </div>
+                              <div class="card-actions">
+                                  <!-- Directly calling the function with the ID string -->
+                                  <button class="btn-edit" onclick="viewProductDetails('${p.id}')">Edit</button>
+                              </div>
+                          </div>
+                      </div>
+                  `;
+            })
+            .join("");
+
+          // THE SINGLE UPDATE
+          grid.innerHTML = productHtml;
+        } catch (err) {
+          console.error("Dashboard error:", err);
+          grid.innerHTML =
+            '<p style="color:red;">Error loading products. Please refresh.</p>';
+        }
+      }
+
+      window.refreshSellerProducts = async function () {
+        const {
+          data: { user },
+          error,
+        } = await supabase.auth.getUser();
+
+        if (error || !user) {
+          console.error("Could not refresh products. No user found.", error);
+          return;
+        }
+
+        await renderNetflixProducts(user);
+      };
+
+      function setupLogout() {
+        const btn = document.getElementById("logoutBtn");
+        if (btn) {
+          btn.onclick = async () => {
+            await supabase.auth.signOut();
+            window.location.href = "./seller-login.html";
+          };
+        }
+      }
+
+      // Start everything
+      initDashboard();
+    </script>
+  </body>
+</html>

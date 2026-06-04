@@ -1,0 +1,277 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="seller.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "@supabase/supabase-js": "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"
+        }
+      }
+    </script>
+  </head>
+  <body class="onboarding-page">
+    <div id="onboarding-wrapper">
+      <div class="onboarding-card">
+        <h2>Complete your Seller Profile</h2>
+        <form id="onboarding-form">
+          <fieldset>
+            <legend>Personal Identity</legend>
+            <div class="form-group">
+              <label for="full_name">Your Full Name*</label>
+              <input
+                type="text"
+                id="full_name"
+                name="full_name"
+                placeholder="e.g. Juan Dela Cruz"
+                required
+              />
+              <p style="font-size: 0.7rem; color: #64748b; margin-top: 4px">
+                * Used for your private dashboard greeting and internal records
+                only.
+              </p>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Store Identity</legend>
+            <div class="field-grid">
+              <div class="form-group">
+                <label for="seller_code">Store Handle</label>
+                <input
+                  type="text"
+                  id="seller_code"
+                  placeholder="e.g. Sveh07beads"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="pin_code">4-Digit PIN</label>
+                <input
+                  type="password"
+                  id="pin_code"
+                  maxlength="4"
+                  placeholder="0000"
+                  required
+                />
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Contact & Socials</legend>
+            <div class="field-grid">
+              <div class="form-group">
+                <label for="contact_number">Public Mobile Number</label>
+                <input
+                  type="tel"
+                  id="contact_number"
+                  placeholder="0917XXXXXXX"
+                  required
+                />
+                <p class="field-help">
+                  Shown to buyers for order-related communications.
+                </p>
+              </div>
+              <div class="form-group">
+                <label for="messenger_url">Public Messenger (m.me)</label>
+                <input
+                  type="url"
+                  id="messenger_url"
+                  placeholder="m.me/yourstore"
+                />
+                <p class="field-help">Shown as a Messenger contact button.</p>
+              </div>
+              <div class="form-group">
+                <label for="viber_number">Public Viber Number</label>
+                <input type="tel" id="viber_number" placeholder="0917XXXXXXX" />
+                <p class="field-help">Shown as a Viber contact option.</p>
+              </div>
+              <div class="form-group">
+                <label for="tiktok_url">Public TikTok Profile</label>
+                <input
+                  type="url"
+                  id="tiktok_url"
+                  placeholder="tiktok.com/@yourstore"
+                />
+                <p class="field-help">Shown as your public TikTok profile.</p>
+              </div>
+            </div>
+          </fieldset>
+          <div class="form-actions onboarding-actions">
+            <button type="submit" class="submit-btn">Create My Store</button>
+            <button
+              type="button"
+              id="cancelOnboarding"
+              class="cancel-onboarding-btn"
+            >
+              Cancel and Sign Out
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <script type="module">
+      import { supabase } from "./supabaseClient.js";
+
+      const form = document.getElementById("onboarding-form");
+
+      async function checkExistingSeller() {
+        // Wait 500ms for the session to persist after login
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        const {
+          data: { user },
+          error: userError,
+        } = await supabase.auth.getUser();
+
+        if (!user || userError) {
+          console.log("No session found. Redirecting to login.");
+          window.location.replace("./seller-login.html");
+          return;
+        }
+
+        // maybeSingle() returns null instead of an error if row is missing
+        const { data: seller } = await supabase
+          .from("sellers")
+          .select("id")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (seller) {
+          window.location.replace("./dashboard.html");
+        }
+      }
+
+      checkExistingSeller();
+
+      function normalizeUrl(value) {
+        if (!value) return null;
+
+        const trimmed = value.trim();
+        if (!trimmed) return null;
+
+        if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+          return trimmed;
+        }
+
+        return `https://${trimmed}`;
+      }
+
+      function normalizePHMobile(value) {
+        if (!value) return null;
+
+        let number = value.trim().replace(/\s+/g, "");
+        number = number.replace(/[-()]/g, "");
+
+        if (/^09\d{9}$/.test(number)) {
+          return `+63${number.slice(1)}`;
+        }
+
+        if (/^9\d{9}$/.test(number)) {
+          return `+63${number}`;
+        }
+
+        if (/^\+639\d{9}$/.test(number)) {
+          return number;
+        }
+
+        return number;
+      }
+
+      function isValidUrl(value) {
+        if (!value) return true;
+
+        try {
+          new URL(value);
+          return true;
+        } catch {
+          return false;
+        }
+      }
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const submitBtn = form.querySelector("button");
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Creating Store...";
+
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        const fullName = document.getElementById("full_name").value.trim();
+        const sellerCode = document.getElementById("seller_code").value.trim();
+        const pinCode = document.getElementById("pin_code").value;
+        const contact = normalizePHMobile(
+          document.getElementById("contact_number").value,
+        );
+
+        const messenger = normalizeUrl(
+          document.getElementById("messenger_url").value,
+        );
+
+        const viber = normalizePHMobile(
+          document.getElementById("viber_number").value,
+        );
+
+        const tiktok = normalizeUrl(
+          document.getElementById("tiktok_url").value,
+        );
+
+        if (!contact || !/^\+639\d{9}$/.test(contact)) {
+          submitBtn.disabled = false;
+          submitBtn.innerText = "Create My Store";
+          alert("Please enter a valid Philippine mobile number.");
+          return;
+        }
+
+        if (viber && !/^\+639\d{9}$/.test(viber)) {
+          submitBtn.disabled = false;
+          submitBtn.innerText = "Create My Store";
+          alert("Please enter a valid Viber number.");
+          return;
+        }
+
+        if (!isValidUrl(messenger) || !isValidUrl(tiktok)) {
+          submitBtn.disabled = false;
+          submitBtn.innerText = "Create My Store";
+          alert("Please enter valid Messenger and TikTok links.");
+          return;
+        }
+        const { error } = await supabase.from("sellers").insert([
+          {
+            user_id: user.id,
+            seller_code: sellerCode,
+            pin_code: pinCode,
+            full_name: fullName,
+            contact_number: contact,
+            messenger_url: messenger || null,
+            viber_number: viber || null,
+            tiktok_url: tiktok || null,
+            // commission_rate and store_status are handled by DB defaults
+          },
+        ]);
+
+        if (error) {
+          submitBtn.disabled = false;
+          submitBtn.innerText = "Create My Store";
+          alert(error.code === "23505" ? "Handle taken!" : error.message);
+          return;
+        }
+
+        window.location.replace("./dashboard.html");
+      });
+
+      document
+        .getElementById("cancelOnboarding")
+        .addEventListener("click", async () => {
+          const { error } = await supabase.auth.signOut();
+          if (!error) {
+            window.location.href = "./seller-login.html";
+          } else {
+            console.error("Error signing out:", error.message);
+          }
+        });
+    </script>
+  </body>
+</html>
