@@ -302,6 +302,21 @@
         }
       }
 
+      //  switch focus to dashboard section selected
+
+      function scrollToActiveDashboardSection() {
+        const isMobile = window.matchMedia("(max-width: 768px)").matches;
+        if (!isMobile) return;
+
+        const mainContent = document.querySelector(".dashboard-layout main");
+        if (!mainContent) return;
+
+        mainContent.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+
       // VIEW SWITCHER: Handles the logic when clicking sidebar links
       function setupViewSwitcher() {
         const links = document.querySelectorAll(".nav-link[data-view]");
@@ -326,7 +341,10 @@
               targetSection.classList.add("active");
             }
 
-            // 3. Trigger Data Fetching
+            // 3. On mobile, scroll down to the selected content area
+            scrollToActiveDashboardSection();
+
+            // 4. Trigger Data Fetching
             if (view === "stats") loadDashboardStats();
             if (view === "products") renderNetflixProducts(currentUser);
             if (view === "orders") await renderOrdersTable();
