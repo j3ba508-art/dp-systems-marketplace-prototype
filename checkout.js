@@ -628,7 +628,7 @@ async function completeOrder() {
 
     alert(
       "Thank you for your order!!\n\n" +
-        `Your tracking number${hasMultipleOrders ? "s are" : " is"}: ${numbersList}\n\n` +
+        `Your order number${hasMultipleOrders ? "s are" : " is"}: ${numbersList}\n\n` +
         `Save ${hasMultipleOrders ? "these numbers" : "this number"} to track your package${hasMultipleOrders ? "s" : ""}.`,
     );
 
