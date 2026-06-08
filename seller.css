@@ -1187,3 +1187,55 @@ display: block !important   ;
     padding-top: 128px !important;
   }
 }
+
+/* ONBOARDING MOBILE CONTAINMENT FIX */
+@media (max-width: 768px) {
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .onboarding-page,
+  .onboarding-shell,
+  .onboarding-card,
+  .seller-auth-shell,
+  .seller-auth-card {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .onboarding-shell,
+  .seller-auth-shell {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .onboarding-card,
+  .seller-auth-card {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  fieldset,
+  .form-group,
+  input,
+  textarea,
+  select {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  legend,
+  h1,
+  p,
+  small {
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+}
