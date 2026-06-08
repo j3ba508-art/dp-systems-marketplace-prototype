@@ -1109,75 +1109,83 @@ display: block !important   ;
   }
 }
 
-/* MOBILE SELLER HUB COMPACT NAV FIX */
+/* MOBILE SELLER HUB COMPACT FIXED NAV */
 @media (max-width: 768px) {
   .dashboard-layout .sidebar {
-    position: sticky;
+    position: fixed !important;
     top: 0;
-    z-index: 1000;
+    left: 0;
+    right: 0;
+    z-index: 2000;
 
-    width: 100%;
-    max-width: 100%;
-    height: auto;
-    min-height: 0;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
 
-    padding: 10px 12px 8px;
+    padding: 8px 10px 8px !important;
     background: #070b14;
     border-bottom: 1px solid rgba(148, 163, 184, 0.2);
-    overflow: visible;
+    overflow: hidden !important;
   }
 
   .dashboard-layout .sidebar h2 {
-    margin: 0 0 8px;
-    padding: 0;
-    font-size: 1.25rem;
-    line-height: 1.2;
+    margin: 0 0 6px !important;
+    padding: 0 !important;
+    font-size: 1.2rem !important;
+    line-height: 1.2 !important;
   }
 
   .dashboard-layout .sidebar nav {
-    display: flex;
-    flex-direction: row;
-    gap: 8px;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 6px !important;
 
-    width: 100%;
-    max-width: 100%;
-    overflow-x: auto;
-    overflow-y: hidden;
+    width: 100% !important;
+    max-width: 100% !important;
 
-    padding: 0 0 4px;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding: 0 0 2px !important;
+
     -webkit-overflow-scrolling: touch;
   }
 
   .dashboard-layout .sidebar nav button,
   .dashboard-layout .sidebar nav a {
-    flex: 0 0 auto;
+    flex: 0 0 auto !important;
 
-    width: auto;
-    min-width: auto;
-    height: auto;
+    width: auto !important;
+    min-width: auto !important;
+    max-width: none !important;
+    height: auto !important;
+    min-height: 0 !important;
 
-    padding: 9px 12px;
-    border-radius: 999px;
+    padding: 8px 10px !important;
+    margin: 0 !important;
+    border-radius: 999px !important;
 
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 5px !important;
 
-    font-size: 0.9rem;
-    line-height: 1;
-    white-space: nowrap;
+    font-size: 0.82rem !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
   }
 
   .dashboard-layout .sidebar nav svg,
   .dashboard-layout .sidebar nav i {
-    width: 16px;
-    height: 16px;
-    font-size: 16px;
+    width: 15px !important;
+    height: 15px !important;
+    font-size: 15px !important;
+    flex: 0 0 auto !important;
   }
 
   .dashboard-layout main,
   .dashboard-main {
-    padding-top: 12px;
+    padding-top: 96px !important;
   }
 }
