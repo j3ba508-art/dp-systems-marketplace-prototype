@@ -1109,13 +1109,11 @@ display: block !important   ;
   }
 }
 
-/* MOBILE SELLER HUB NAV FIXED FIX */
+/* MOBILE SELLER HUB COMPACT NAV FIX */
 @media (max-width: 768px) {
   .dashboard-layout .sidebar {
-    position: fixed;
+    position: sticky;
     top: 0;
-    left: 0;
-    right: 0;
     z-index: 1000;
 
     width: 100%;
@@ -1123,34 +1121,63 @@ display: block !important   ;
     height: auto;
     min-height: 0;
 
+    padding: 10px 12px 8px;
     background: #070b14;
     border-bottom: 1px solid rgba(148, 163, 184, 0.2);
     overflow: visible;
   }
 
   .dashboard-layout .sidebar h2 {
-    margin: 0;
-    padding: 12px 14px 6px;
-    font-size: 1.3rem;
+    margin: 0 0 8px;
+    padding: 0;
+    font-size: 1.25rem;
+    line-height: 1.2;
   }
 
   .dashboard-layout .sidebar nav {
     display: flex;
+    flex-direction: row;
     gap: 8px;
+
+    width: 100%;
+    max-width: 100%;
     overflow-x: auto;
     overflow-y: hidden;
-    padding: 8px 12px 12px;
+
+    padding: 0 0 4px;
     -webkit-overflow-scrolling: touch;
   }
 
   .dashboard-layout .sidebar nav button,
   .dashboard-layout .sidebar nav a {
     flex: 0 0 auto;
+
+    width: auto;
+    min-width: auto;
+    height: auto;
+
+    padding: 9px 12px;
+    border-radius: 999px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    font-size: 0.9rem;
+    line-height: 1;
     white-space: nowrap;
+  }
+
+  .dashboard-layout .sidebar nav svg,
+  .dashboard-layout .sidebar nav i {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
   }
 
   .dashboard-layout main,
   .dashboard-main {
-    padding-top: 120px;
+    padding-top: 12px;
   }
 }
