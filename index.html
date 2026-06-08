@@ -48,8 +48,19 @@
       <h1>D & P Marketplace Test</h1>
       <p>Select a page to test:</p>
 
-      <a href="mp.html">Buyer Marketplace</a>
-      <a href="seller-login.html">Seller Login</a>
+      <a href="mp.html" data-replace="mp.html">Buyer Marketplace</a>
+      <a href="seller-login.html" data-replace="seller-login.html"
+        >Seller Login</a
+      >
+
+      <script>
+        document.querySelectorAll("[data-replace]").forEach((link) => {
+          link.addEventListener("click", (event) => {
+            event.preventDefault();
+            window.location.replace(link.dataset.replace);
+          });
+        });
+      </script>
     </main>
   </body>
 </html>
