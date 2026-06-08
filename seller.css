@@ -1058,3 +1058,52 @@ display: block !important   ;
     gap: 10px;
   }
 }
+
+@media (max-width: 768px) {
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .dashboard-layout,
+  .dashboard-layout main,
+  .dashboard-main,
+  .dashboard-content,
+  .dashboard-section,
+  .content-section {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .dashboard-layout {
+    display: block;
+  }
+
+  .dashboard-layout main,
+  .dashboard-main {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .stats-grid,
+  .products-grid,
+  .orders-grid,
+  .reviews-grid {
+    grid-template-columns: 1fr;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  table,
+  .table-wrap,
+  .orders-table,
+  .products-table,
+  .reviews-table {
+    max-width: 100%;
+  }
+}
