@@ -1059,6 +1059,7 @@ display: block !important   ;
   }
 }
 
+/* DASHBOARD MOBILE OVERFLOW CONTAINMENT FIX */
 @media (max-width: 768px) {
   html,
   body {
