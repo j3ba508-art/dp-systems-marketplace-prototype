@@ -1109,11 +1109,13 @@ display: block !important   ;
   }
 }
 
-/* MOBILE SELLER HUB NAV STICKY FIX */
+/* MOBILE SELLER HUB NAV FIXED FIX */
 @media (max-width: 768px) {
   .dashboard-layout .sidebar {
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     z-index: 1000;
 
     width: 100%;
@@ -1121,9 +1123,9 @@ display: block !important   ;
     height: auto;
     min-height: 0;
 
-    overflow: visible;
     background: #070b14;
     border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+    overflow: visible;
   }
 
   .dashboard-layout .sidebar h2 {
@@ -1145,5 +1147,10 @@ display: block !important   ;
   .dashboard-layout .sidebar nav a {
     flex: 0 0 auto;
     white-space: nowrap;
+  }
+
+  .dashboard-layout main,
+  .dashboard-main {
+    padding-top: 120px;
   }
 }
