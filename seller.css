@@ -1139,42 +1139,40 @@ display: block !important   ;
   .dashboard-layout .sidebar nav {
     display: flex !important;
     flex-direction: row !important;
+    flex-wrap: wrap !important;
     align-items: center !important;
     gap: 6px !important;
 
     width: 100% !important;
     max-width: 100% !important;
 
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-    padding: 0 0 2px !important;
-
-    -webkit-overflow-scrolling: touch;
+    overflow: visible !important;
+    padding: 0 !important;
   }
 
   .dashboard-layout .sidebar nav button,
-  .dashboard-layout .sidebar nav a {
-    flex: 0 0 auto !important;
+.dashboard-layout .sidebar nav a {
+  flex: 1 1 calc(33.333% - 6px) !important;
 
-    width: auto !important;
-    min-width: auto !important;
-    max-width: none !important;
-    height: auto !important;
-    min-height: 0 !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  height: auto !important;
+  min-height: 0 !important;
 
-    padding: 8px 10px !important;
-    margin: 0 !important;
-    border-radius: 999px !important;
+  padding: 8px 6px !important;
+  margin: 0 !important;
+  border-radius: 12px !important;
 
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 5px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
 
-    font-size: 0.82rem !important;
-    line-height: 1 !important;
-    white-space: nowrap !important;
-  }
+  font-size: 0.78rem !important;
+  line-height: 1.1 !important;
+  white-space: nowrap !important;
+}
 
   .dashboard-layout .sidebar nav svg,
   .dashboard-layout .sidebar nav i {
@@ -1186,6 +1184,6 @@ display: block !important   ;
 
   .dashboard-layout main,
   .dashboard-main {
-    padding-top: 96px !important;
+    padding-top: 128px !important;
   }
 }
