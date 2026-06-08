@@ -1114,17 +1114,29 @@ display: block !important   ;
   .dashboard-layout .sidebar {
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 1000;
+
     width: 100%;
     max-width: 100%;
+    height: auto;
+    min-height: 0;
+
+    overflow: visible;
     background: #070b14;
     border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  }
+
+  .dashboard-layout .sidebar h2 {
+    margin: 0;
+    padding: 12px 14px 6px;
+    font-size: 1.3rem;
   }
 
   .dashboard-layout .sidebar nav {
     display: flex;
     gap: 8px;
     overflow-x: auto;
+    overflow-y: hidden;
     padding: 8px 12px 12px;
     -webkit-overflow-scrolling: touch;
   }
