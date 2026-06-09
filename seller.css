@@ -1239,3 +1239,46 @@ display: block !important   ;
     overflow-wrap: break-word;
   }
 }
+
+/* ONBOARDING MOBILE FINAL TIGHTENING */
+@media (max-width: 768px) {
+  .onboarding-shell,
+  .seller-auth-shell {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .onboarding-card,
+  .seller-auth-card {
+    width: 100%;
+    max-width: calc(100vw - 20px);
+    padding-left: 14px;
+    padding-right: 14px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  fieldset {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  input,
+  textarea,
+  select {
+    font-size: 1rem;
+  }
+
+  .form-actions,
+  .onboarding-actions {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .form-actions button,
+  .onboarding-actions button,
+  .submit-btn {
+    width: 100%;
+    max-width: 100%;
+  }
+}
