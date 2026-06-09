@@ -1240,43 +1240,68 @@ display: block !important   ;
   }
 }
 
-/* ONBOARDING MOBILE FINAL TIGHTENING */
+/* ONBOARDING MOBILE FINAL CONTAINMENT FIX */
 @media (max-width: 768px) {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
   .onboarding-shell,
   .seller-auth-shell {
-    padding-left: 10px;
-    padding-right: 10px;
+    width: 100%;
+    max-width: 100%;
+    padding-left: 8px;
+    padding-right: 8px;
+    overflow-x: hidden;
   }
 
   .onboarding-card,
   .seller-auth-card {
     width: 100%;
-    max-width: calc(100vw - 20px);
-    padding-left: 14px;
-    padding-right: 14px;
+    max-width: calc(100vw - 16px);
     margin-left: auto;
     margin-right: auto;
+    padding-left: 12px;
+    padding-right: 12px;
+    overflow-x: hidden;
   }
 
   fieldset {
-    padding-left: 12px;
-    padding-right: 12px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-inline-size: 0;
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 10px;
+    padding-right: 10px;
   }
 
+  legend {
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  .form-group,
   input,
   textarea,
   select {
-    font-size: 1rem;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
   }
 
   .form-actions,
-  .onboarding-actions {
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .form-actions button,
-  .onboarding-actions button,
+  .onboarding-actions,
   .submit-btn {
     width: 100%;
     max-width: 100%;
