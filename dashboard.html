@@ -261,7 +261,7 @@
             await supabase.auth.getUser();
 
           if (authError || !authData?.user) {
-            window.location.href = "./seller-login.html";
+            window.location.replace = "./seller-login.html";
             return;
           }
           currentUser = authData.user;
@@ -735,7 +735,7 @@
         if (btn) {
           btn.onclick = async () => {
             await supabase.auth.signOut();
-            window.location.href = "./seller-login.html";
+            window.location.replace = "./seller-login.html";
           };
         }
       }

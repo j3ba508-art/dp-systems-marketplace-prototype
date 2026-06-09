@@ -269,7 +269,7 @@
         .addEventListener("click", async () => {
           const { error } = await supabase.auth.signOut();
           if (!error) {
-            window.location.href = "./seller-login.html";
+            window.location.replace = "./seller-login.html";
           } else {
             console.error("Error signing out:", error.message);
           }
