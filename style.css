@@ -1247,3 +1247,70 @@ select.invalid-field {
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================================
+   BUYER APP - MOBILE LANDSCAPE FIXES ONLY
+   Applies to phones/tablets in landscape.
+   Does not affect normal desktop or portrait.
+========================================= */
+
+@media (max-width: 920px) and (orientation: landscape) {
+  html,
+  body {
+    height: auto !important;
+    min-height: 100% !important;
+    max-height: none !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  body {
+    position: static !important;
+  }
+
+  main,
+  .main,
+  .app,
+  .app-shell,
+  .page,
+  .page-wrap,
+  .container,
+  .cart-page,
+  .cart-container,
+  .checkout-page,
+  .checkout-container,
+  .track-page,
+  .track-container,
+  .track-wrapper,
+  .order-page {
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    overflow-y: visible !important;
+  }
+}
+
+/* BUYER APP - MOBILE LANDSCAPE CART FAB FIX */
+@media (max-width: 920px) and (orientation: landscape) {
+  .cart-fab,
+  #cartFab,
+  .floating-cart,
+  .cart-floating-btn,
+  .cart-button-floating {
+    position: fixed !important;
+    right: max(14px, env(safe-area-inset-right)) !important;
+    bottom: max(18px, env(safe-area-inset-bottom)) !important;
+    z-index: 9999 !important;
+
+    width: 54px !important;
+    height: 54px !important;
+    min-width: 54px !important;
+    min-height: 54px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    transform: none !important;
+  }
+}
