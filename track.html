@@ -56,6 +56,32 @@
         }
       }
 
+      function normalizePHMobileNumber(value) {
+        if (!value) return "";
+
+        let number = String(value).trim();
+
+        // Remove spaces, dashes, parentheses
+        number = number.replace(/[^\d+]/g, "");
+
+        // 09876543212 -> 639876543212
+        if (number.startsWith("09")) {
+          return "63" + number.slice(1);
+        }
+
+        // +639876543212 -> 639876543212
+        if (number.startsWith("+63")) {
+          return number.slice(1);
+        }
+
+        // 639876543212 -> 639876543212
+        if (number.startsWith("63")) {
+          return number;
+        }
+
+        return number;
+      }
+
       function renderSellerContactButtons(seller) {
         if (!seller) return "";
         const sellerName = hasValue(seller.full_name) ? seller.full_name : "";
@@ -87,10 +113,12 @@
         }
 
         if (hasValue(seller.viber_number)) {
+          const viberNumber = normalizePHMobileNumber(seller.viber_number);
+
           buttons.push(`
             <a
               class="seller-contact-btn"
-              href="viber://chat?number=${seller.viber_number}"
+              href="viber://chat?number=${viberNumber}"
             >
               Viber
             </a>

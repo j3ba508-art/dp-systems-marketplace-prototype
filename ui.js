@@ -65,12 +65,31 @@ export function enableMobileKeyboardScrollFix() {
   const fields = document.querySelectorAll("input, select, textarea");
 
   fields.forEach((field) => {
+    if (field.dataset.keyboardScrollFix === "true") return;
+
+    field.dataset.keyboardScrollFix = "true";
+
     field.addEventListener("focus", () => {
       setTimeout(() => {
-        field.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-        });
+        const rect = field.getBoundingClientRect();
+
+        const visibleHeight =
+          window.visualViewport?.height || window.innerHeight;
+
+        const bottomLimit = visibleHeight - 24;
+        const topLimit = 70;
+
+        if (rect.bottom > bottomLimit) {
+          window.scrollBy({
+            top: rect.bottom - bottomLimit,
+            behavior: "smooth",
+          });
+        } else if (rect.top < topLimit) {
+          window.scrollBy({
+            top: rect.top - topLimit,
+            behavior: "smooth",
+          });
+        }
       }, 350);
     });
   });
