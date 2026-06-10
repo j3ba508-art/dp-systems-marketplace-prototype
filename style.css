@@ -1316,29 +1316,25 @@ select.invalid-field {
 }
 
 /* =========================================
-   BUYER APP - MOBILE KEYBOARD COMFORT FIX
-   Helps form fields stay usable when keyboard opens.
+   BUYER APP - MOBILE LANDSCAPE KEYBOARD FIX
+   Light version: avoids huge blank spaces.
 ========================================= */
 
 @media (max-width: 920px) and (orientation: landscape) {
-  body {
-    padding-bottom: 260px !important;
-  }
-
   input,
   select,
   textarea {
     font-size: 16px !important;
-    scroll-margin-bottom: 280px !important;
     scroll-margin-top: 80px !important;
+    scroll-margin-bottom: 32px !important;
   }
 
-  .buyer-info-card,
-  .checkout-card,
-  .track-card,
-  .cart-card,
-  .order-summary,
-  .cart-summary {
-    margin-bottom: 280px !important;
+  .cart-page,
+  .cart-container,
+  .checkout-page,
+  .checkout-container,
+  .track-page,
+  .track-container {
+    padding-bottom: 32px !important;
   }
 }
