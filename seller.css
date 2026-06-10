@@ -1136,55 +1136,77 @@ display: block !important   ;
     line-height: 1.2 !important;
   }
 
-  .dashboard-layout .sidebar nav {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: wrap !important;
-    align-items: center !important;
-    gap: 6px !important;
+  /* MOBILE SELLER HUB NAV GRID */
+  @media (max-width: 768px) {
+    .dashboard-layout .sidebar nav {
+      display: grid !important;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      gap: 6px !important;
 
-    width: 100% !important;
-    max-width: 100% !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      overflow: visible !important;
+      padding: 0 !important;
+    }
 
-    overflow: visible !important;
-    padding: 0 !important;
+    .dashboard-layout .sidebar nav button,
+    .dashboard-layout .sidebar nav a {
+      width: 100% !important;
+      min-width: 0 !important;
+
+      padding: 8px 6px !important;
+      border-radius: 12px !important;
+
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 5px !important;
+
+      font-size: 0.78rem !important;
+      line-height: 1.1 !important;
+      white-space: nowrap !important;
+    }
+
+    .dashboard-layout .sidebar nav svg,
+    .dashboard-layout .sidebar nav i {
+      width: 15px !important;
+      height: 15px !important;
+      font-size: 15px !important;
+      flex: 0 0 auto !important;
+    }
+
+    .dashboard-layout main,
+    .dashboard-main {
+      padding-top: 132px !important;
+    }
   }
+  /* LANDSCAPE PHONE SELLER HUB NAV */
+  @media (max-width: 900px) and (orientation: landscape) {
+    .dashboard-layout .sidebar {
+      padding: 6px 10px !important;
+    }
 
-  .dashboard-layout .sidebar nav button,
-.dashboard-layout .sidebar nav a {
-  flex: 1 1 calc(33.333% - 6px) !important;
+    .dashboard-layout .sidebar h2 {
+      margin: 0 0 6px !important;
+      font-size: 1.1rem !important;
+      line-height: 1.1 !important;
+    }
 
-  width: auto !important;
-  min-width: 0 !important;
-  max-width: none !important;
-  height: auto !important;
-  min-height: 0 !important;
+    .dashboard-layout .sidebar nav {
+      grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+      gap: 6px !important;
+    }
 
-  padding: 8px 6px !important;
-  margin: 0 !important;
-  border-radius: 12px !important;
+    .dashboard-layout .sidebar nav button,
+    .dashboard-layout .sidebar nav a {
+      padding: 7px 5px !important;
+      font-size: 0.74rem !important;
+    }
 
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 5px !important;
-
-  font-size: 0.78rem !important;
-  line-height: 1.1 !important;
-  white-space: nowrap !important;
-}
-
-  .dashboard-layout .sidebar nav svg,
-  .dashboard-layout .sidebar nav i {
-    width: 15px !important;
-    height: 15px !important;
-    font-size: 15px !important;
-    flex: 0 0 auto !important;
-  }
-
-  .dashboard-layout main,
-  .dashboard-main {
-    padding-top: 128px !important;
+    .dashboard-layout main,
+    .dashboard-main {
+      padding-top: 92px !important;
+    }
   }
 }
 
