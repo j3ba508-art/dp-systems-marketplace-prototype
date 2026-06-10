@@ -635,7 +635,7 @@ async function completeOrder() {
     clearCartUI();
 
     setTimeout(() => {
-      window.location.href = `track.html?id=${createdOrderNumbers[0]}`;
+      window.location.replace(`track.html?id=${createdOrderNumbers[0]}`);
     }, 1200);
 
     return;
