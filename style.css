@@ -1314,3 +1314,31 @@ select.invalid-field {
     transform: none !important;
   }
 }
+
+/* =========================================
+   BUYER APP - MOBILE KEYBOARD COMFORT FIX
+   Helps form fields stay usable when keyboard opens.
+========================================= */
+
+@media (max-width: 920px) and (orientation: landscape) {
+  body {
+    padding-bottom: 260px !important;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+    scroll-margin-bottom: 280px !important;
+    scroll-margin-top: 80px !important;
+  }
+
+  .buyer-info-card,
+  .checkout-card,
+  .track-card,
+  .cart-card,
+  .order-summary,
+  .cart-summary {
+    margin-bottom: 280px !important;
+  }
+}

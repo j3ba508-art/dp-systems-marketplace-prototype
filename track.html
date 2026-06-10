@@ -39,7 +39,11 @@
 
     <script type="module">
       import { supabase } from "./supabaseClient.js";
-      import { showToast, hasValue } from "./ui.js";
+      import {
+        showToast,
+        hasValue,
+        enableMobileKeyboardScrollFix,
+      } from "./ui.js";
 
       function isValidUrl(value) {
         if (!hasValue(value)) return false;
@@ -520,6 +524,8 @@
         };
       }
       // --- Logic to run when the page loads ---
+
+      enableMobileKeyboardScrollFix();
 
       // URL check
       const params = new URLSearchParams(window.location.search);

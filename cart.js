@@ -1,7 +1,7 @@
 // cart.js - Handles the shopping cart UI and interactions
 
 import { supabase } from "./supabase-loader.js";
-import { showToast } from "./ui.js";
+import { showToast, enableMobileKeyboardScrollFix } from "./ui.js";
 import {
   loadBuyerByCode,
   checkout,
@@ -316,13 +316,16 @@ async function init() {
   await syncCartWithCurrentProducts();
   updateInterface();
 
-  // 2. Attach checkout button
+  // 2. Enable mobile landscape keyboard scroll helper
+  enableMobileKeyboardScrollFix();
+
+  // 3. Attach checkout button
   const checkoutBtn = document.getElementById("checkoutBtn");
   if (checkoutBtn) {
     checkoutBtn.onclick = checkout;
   }
 
-  // 3. Get buyer code input before using it
+  // 4. Get buyer code input before using it
   const codeInput = document.getElementById("buyerCodeInput");
 
   if (!codeInput) {
@@ -330,7 +333,7 @@ async function init() {
     return;
   }
 
-  // 4. Restore remembered buyer code silently
+  // 5. Restore remembered buyer code silently
   const saved = localStorage.getItem("buyer_code");
 
   if (saved) {
@@ -347,7 +350,7 @@ async function init() {
     resetBuyerUI();
   }
 
-  // 5. Attach buyer code listeners always, whether saved code exists or not
+  // 6. Attach buyer code listeners always, whether saved code exists or not
   codeInput.addEventListener("input", () => {
     if (codeInput.value.trim() === "") {
       localStorage.removeItem("buyer_code");

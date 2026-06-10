@@ -52,3 +52,26 @@ export function formatCurrency(amount) {
 export function hasValue(value) {
   return value !== null && value !== undefined && String(value).trim() !== "";
 }
+
+// gently scroll the active input into view after the keyboard opens in mobile landscape mode
+// shared by cart and track js modules
+export function enableMobileKeyboardScrollFix() {
+  const isMobileLandscape = window.matchMedia(
+    "(max-width: 920px) and (orientation: landscape)",
+  ).matches;
+
+  if (!isMobileLandscape) return;
+
+  const fields = document.querySelectorAll("input, select, textarea");
+
+  fields.forEach((field) => {
+    field.addEventListener("focus", () => {
+      setTimeout(() => {
+        field.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }, 350);
+    });
+  });
+}
