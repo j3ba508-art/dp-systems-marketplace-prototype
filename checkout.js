@@ -626,15 +626,18 @@ async function completeOrder() {
     const numbersList = createdOrderNumbers.join(", ");
     const hasMultipleOrders = createdOrderNumbers.length > 1;
 
-    alert(
-      "Thank you for your order!!\n\n" +
-        `Your order number${hasMultipleOrders ? "s are" : " is"}: ${numbersList}\n\n` +
-        `Save ${hasMultipleOrders ? "these numbers" : "this number"} to track your package${hasMultipleOrders ? "s" : ""}.`,
-    );
+    const orderMessage = hasMultipleOrders
+      ? `Orders placed! Order nos: ${numbersList}`
+      : `Order placed! Order no: ${numbersList}`;
+
+    showToast(orderMessage, 4500);
 
     clearCartUI();
 
-    window.location.href = `track.html?id=${createdOrderNumbers[0]}`;
+    setTimeout(() => {
+      window.location.href = `track.html?id=${createdOrderNumbers[0]}`;
+    }, 1200);
+
     return;
   }
 

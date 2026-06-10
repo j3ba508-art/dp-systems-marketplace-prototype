@@ -317,7 +317,7 @@ async function init() {
   updateInterface();
 
   // 2. Enable mobile landscape keyboard scroll helper
-  // enableMobileKeyboardScrollFix();
+  enableMobileKeyboardScrollFix();
 
   // 3. Attach checkout button
   const checkoutBtn = document.getElementById("checkoutBtn");
