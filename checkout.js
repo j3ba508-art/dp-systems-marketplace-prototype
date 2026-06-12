@@ -630,7 +630,7 @@ async function completeOrder() {
       ? `Orders placed! Order nos: ${numbersList}`
       : `Order placed! Order no: ${numbersList}`;
 
-    showToast(orderMessage, 7500);
+    showToast(orderMessage, 12500);
 
     clearCartUI();
 
