@@ -320,18 +320,69 @@
         });
       }
 
+      let sellerReviewsHistoryActive = false;
+
+      function pushSellerReviewsHistoryState() {
+        if (sellerReviewsHistoryActive) return;
+
+        sellerReviewsHistoryActive = true;
+        history.pushState({ sellerView: "reviews" }, "", "#reviews");
+      }
+
+      function returnToSellerStatsView() {
+        sellerReviewsHistoryActive = false;
+
+        // Clear active nav state
+        document
+          .querySelectorAll(".nav-link")
+          .forEach((l) => l.classList.remove("active"));
+
+        // Activate Stats nav link
+        const statsLink = document.querySelector(
+          '.nav-link[data-view="stats"]',
+        );
+        if (statsLink) {
+          statsLink.classList.add("active");
+        }
+
+        // Hide all sections
+        document
+          .querySelectorAll(".view-section")
+          .forEach((s) => s.classList.remove("active"));
+
+        // Show stats section
+        const statsSection = document.getElementById("view-stats");
+        if (statsSection) {
+          statsSection.classList.add("active");
+        }
+
+        loadDashboardStats();
+
+        // Remove #reviews from URL without creating another history entry
+        history.replaceState(null, "", window.location.pathname);
+      }
+
+      window.addEventListener("popstate", () => {
+        if (sellerReviewsHistoryActive) {
+          returnToSellerStatsView();
+        }
+      });
+
       // VIEW SWITCHER: Handles the logic when clicking sidebar links
       function setupViewSwitcher() {
         const links = document.querySelectorAll(".nav-link[data-view]");
+
         links.forEach((link) => {
           link.addEventListener("click", async (e) => {
             e.preventDefault();
+
             const view = link.getAttribute("data-view");
 
             // 1. Update Sidebar UI
             document
               .querySelectorAll(".nav-link")
               .forEach((l) => l.classList.remove("active"));
+
             link.classList.add("active");
 
             // 2. Toggle Section Visibility using ONLY classes
@@ -340,6 +391,7 @@
               .forEach((s) => s.classList.remove("active"));
 
             const targetSection = document.getElementById(`view-${view}`);
+
             if (targetSection) {
               targetSection.classList.add("active");
             }
@@ -348,10 +400,28 @@
             scrollToActiveDashboardSection();
 
             // 4. Trigger Data Fetching
-            if (view === "stats") loadDashboardStats();
-            if (view === "products") renderNetflixProducts(currentUser);
-            if (view === "orders") await renderOrdersTable();
-            if (view === "reviews") await loadSellerReviews();
+            if (view === "stats") {
+              sellerReviewsHistoryActive = false;
+              history.replaceState(null, "", window.location.pathname);
+              loadDashboardStats();
+            }
+
+            if (view === "products") {
+              sellerReviewsHistoryActive = false;
+              history.replaceState(null, "", window.location.pathname);
+              renderNetflixProducts(currentUser);
+            }
+
+            if (view === "orders") {
+              sellerReviewsHistoryActive = false;
+              history.replaceState(null, "", window.location.pathname);
+              await renderOrdersTable();
+            }
+
+            if (view === "reviews") {
+              pushSellerReviewsHistoryState();
+              await loadSellerReviews();
+            }
           });
         });
       }
