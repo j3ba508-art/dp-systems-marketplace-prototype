@@ -320,52 +320,71 @@
         });
       }
 
-      let sellerReviewsHistoryActive = false;
+      // general seller view history fix for android back button
+      let currentSellerView = "stats";
 
-      function pushSellerReviewsHistoryState() {
-        if (sellerReviewsHistoryActive) return;
+      function activateSellerView(view, options = {}) {
+        const { pushHistory = true, scrollOnMobile = true } = options;
 
-        sellerReviewsHistoryActive = true;
-        history.pushState({ sellerView: "reviews" }, "", "#reviews");
-      }
+        currentSellerView = view;
 
-      function returnToSellerStatsView() {
-        sellerReviewsHistoryActive = false;
-
-        // Clear active nav state
+        // 1. Update Sidebar UI
         document
           .querySelectorAll(".nav-link")
           .forEach((l) => l.classList.remove("active"));
 
-        // Activate Stats nav link
-        const statsLink = document.querySelector(
-          '.nav-link[data-view="stats"]',
+        const activeLink = document.querySelector(
+          `.nav-link[data-view="${view}"]`,
         );
-        if (statsLink) {
-          statsLink.classList.add("active");
+        if (activeLink) {
+          activeLink.classList.add("active");
         }
 
-        // Hide all sections
+        // 2. Toggle Section Visibility
         document
           .querySelectorAll(".view-section")
           .forEach((s) => s.classList.remove("active"));
 
-        // Show stats section
-        const statsSection = document.getElementById("view-stats");
-        if (statsSection) {
-          statsSection.classList.add("active");
+        const targetSection = document.getElementById(`view-${view}`);
+        if (targetSection) {
+          targetSection.classList.add("active");
         }
 
-        loadDashboardStats();
+        // 3. Update browser history
+        if (pushHistory) {
+          history.pushState({ sellerView: view }, "", `#${view}`);
+        }
 
-        // Remove #reviews from URL without creating another history entry
-        history.replaceState(null, "", window.location.pathname);
+        // 4. On mobile, scroll down to selected content
+        if (scrollOnMobile) {
+          scrollToActiveDashboardSection();
+        }
+
+        // 5. Trigger Data Fetching
+        if (view === "stats") {
+          loadDashboardStats();
+        }
+
+        if (view === "products") {
+          renderNetflixProducts(currentUser);
+        }
+
+        if (view === "orders") {
+          renderOrdersTable();
+        }
+
+        if (view === "reviews") {
+          loadSellerReviews();
+        }
       }
 
-      window.addEventListener("popstate", () => {
-        if (sellerReviewsHistoryActive) {
-          returnToSellerStatsView();
-        }
+      window.addEventListener("popstate", (event) => {
+        const view = event.state?.sellerView || "stats";
+
+        activateSellerView(view, {
+          pushHistory: false,
+          scrollOnMobile: true,
+        });
       });
 
       // VIEW SWITCHER: Handles the logic when clicking sidebar links
@@ -373,58 +392,23 @@
         const links = document.querySelectorAll(".nav-link[data-view]");
 
         links.forEach((link) => {
-          link.addEventListener("click", async (e) => {
+          link.addEventListener("click", (e) => {
             e.preventDefault();
 
             const view = link.getAttribute("data-view");
 
-            // 1. Update Sidebar UI
-            document
-              .querySelectorAll(".nav-link")
-              .forEach((l) => l.classList.remove("active"));
-
-            link.classList.add("active");
-
-            // 2. Toggle Section Visibility using ONLY classes
-            document
-              .querySelectorAll(".view-section")
-              .forEach((s) => s.classList.remove("active"));
-
-            const targetSection = document.getElementById(`view-${view}`);
-
-            if (targetSection) {
-              targetSection.classList.add("active");
-            }
-
-            // 3. On mobile, scroll down to the selected content area
-            scrollToActiveDashboardSection();
-
-            // 4. Trigger Data Fetching
-            if (view === "stats") {
-              sellerReviewsHistoryActive = false;
-              history.replaceState(null, "", window.location.pathname);
-              loadDashboardStats();
-            }
-
-            if (view === "products") {
-              sellerReviewsHistoryActive = false;
-              history.replaceState(null, "", window.location.pathname);
-              renderNetflixProducts(currentUser);
-            }
-
-            if (view === "orders") {
-              sellerReviewsHistoryActive = false;
-              history.replaceState(null, "", window.location.pathname);
-              await renderOrdersTable();
-            }
-
-            if (view === "reviews") {
-              pushSellerReviewsHistoryState();
-              await loadSellerReviews();
-            }
+            activateSellerView(view, {
+              pushHistory: true,
+              scrollOnMobile: true,
+            });
           });
         });
       }
+      history.replaceState(
+        { sellerView: "stats" },
+        "",
+        window.location.pathname,
+      );
 
       // STATS LOGIC: Updates the numbers on the main dashboard
       async function loadProductCount() {

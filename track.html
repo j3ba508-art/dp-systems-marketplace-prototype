@@ -16,7 +16,7 @@
   <body class="track-page">
     <div class="app track-app">
       <header class="header track-header">
-        <a href="mp.html" class="back-link">← Back to Shop</a>
+        <a href="mp.html" id="backToShopLink">← Back to Shop</a>
         <h2>Track Order</h2>
       </header>
 
@@ -152,6 +152,31 @@
         `;
       }
 
+      let reviewFormOpen = false;
+
+      function pushReviewHistoryState() {
+        if (reviewFormOpen) return;
+
+        reviewFormOpen = true;
+        history.pushState({ reviewFormOpen: true }, "", window.location.href);
+      }
+
+      function closeReviewForm() {
+        const existingForm = document.querySelector(".review-form-box");
+
+        if (existingForm) {
+          existingForm.remove();
+        }
+
+        reviewFormOpen = false;
+      }
+
+      window.addEventListener("popstate", () => {
+        if (reviewFormOpen) {
+          closeReviewForm();
+        }
+      });
+
       function openReviewForm({
         productId,
         orderId,
@@ -160,6 +185,8 @@
         buyerName,
         buttonEl,
       }) {
+        pushReviewHistoryState();
+
         const existingForm = document.querySelector(".review-form-box");
         if (existingForm) existingForm.remove();
 
@@ -201,7 +228,11 @@
         document
           .getElementById("cancelReviewBtn")
           .addEventListener("click", () => {
-            formBox.remove();
+            closeReviewForm();
+
+            if (history.state?.reviewFormOpen) {
+              history.back();
+            }
           });
 
         document
@@ -551,6 +582,7 @@
           });
         };
       }
+
       // --- Logic to run when the page loads ---
 
       enableMobileKeyboardScrollFix();
@@ -567,6 +599,16 @@
       document.getElementById("trackBtn").onclick = () => {
         fetchOrder(document.getElementById("orderInput").value);
       };
+
+      // Back to Shop should replace track page, not add another history entry
+      const backToShopLink = document.getElementById("backToShopLink");
+
+      if (backToShopLink) {
+        backToShopLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          window.location.replace("mp.html");
+        });
+      }
     </script>
   </body>
 </html>

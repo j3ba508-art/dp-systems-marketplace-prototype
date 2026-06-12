@@ -1338,3 +1338,67 @@ select.invalid-field {
     padding-bottom: 32px !important;
   }
 }
+
+/* BUYER APP - REVIEW FORM LANDSCAPE FIX */
+@media (max-width: 920px) and (orientation: landscape) {
+  .review-form,
+  #reviewForm,
+  .review-card,
+  .review-box {
+    max-height: none !important;
+    overflow: visible !important;
+    padding: 14px !important;
+    margin-bottom: 32px !important;
+  }
+
+  .review-form textarea,
+  #reviewForm textarea,
+  .review-card textarea,
+  .review-box textarea {
+    min-height: 70px !important;
+    max-height: 90px !important;
+    font-size: 16px !important;
+    resize: vertical;
+  }
+
+  .review-form input,
+  .review-form select,
+  .review-form textarea,
+  #reviewForm input,
+  #reviewForm select,
+  #reviewForm textarea {
+    font-size: 16px !important;
+  }
+
+  .review-actions,
+  .review-buttons {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .review-actions button,
+  .review-buttons button {
+    flex: 1 1 120px !important;
+    min-width: 0 !important;
+    padding: 9px 12px !important;
+  }
+}
+
+@media (max-width: 920px) and (orientation: landscape) {
+  .review-form h3,
+  #reviewForm h3,
+  .review-card h3,
+  .review-box h3 {
+    font-size: 1.1rem !important;
+    margin-bottom: 8px !important;
+  }
+
+  .review-form p,
+  #reviewForm p,
+  .review-card p,
+  .review-box p {
+    font-size: 0.9rem !important;
+    margin-bottom: 8px !important;
+  }
+}

@@ -216,12 +216,21 @@ function updateInterface() {
       <div class="empty-state-container">
           <p style="font-weight: bold; color: #555;">Nothing to see here.</p>
           <p style="font-weight: bold; color: #555;">Pick some charms to get started.</p>
-          <button id="backToShopBtn" class="btn-primary" onclick="window.location.href='mp.html'">
-              BACK TO SHOP
-          </button>
+           <button id="backToShopBtn" class="btn-primary">
+            BACK TO SHOP
+        </button>
           <div style="font-size: 40px; margin-top: 15px;">😉</div>
       </div>
     `;
+
+    // 1B. Fix Android Back loop: use replace instead of href
+    const backToShopBtn = document.getElementById("backToShopBtn");
+
+    if (backToShopBtn) {
+      backToShopBtn.addEventListener("click", () => {
+        window.location.replace("mp.html");
+      });
+    }
 
     // 2. Ghost the Buyer Information
     if (buyerBox) {
