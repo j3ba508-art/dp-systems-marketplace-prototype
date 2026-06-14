@@ -90,28 +90,33 @@
 
         if (hasValue(seller.contact_number)) {
           buttons.push(`
-            <a
-              class="seller-contact-btn"
-              href="tel:${seller.contact_number}"
-            >
-              Call/Text
-            </a>
-          `);
+                  <a
+                    class="seller-contact-btn"
+                    href="tel:${seller.contact_number}"
+                  >
+                    Call/Text
+                  </a>
+                `);
         }
 
         if (isValidUrl(seller.messenger_url)) {
           buttons.push(`
-            <a
-              class="seller-contact-btn"
-              href="${seller.messenger_url}"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Messenger
-            </a>
-          `);
+                  <a
+                    class="seller-contact-btn"
+                    href="${seller.messenger_url}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Messenger
+                  </a>
+                `);
         }
 
+        // Viber temporarily hidden.
+        // Tested on Android + desktop: deep link opens Viber but does not reliably start chat.
+        // Keep viber_number in onboarding/database for future compatibility review.
+
+        /*              
         if (hasValue(seller.viber_number)) {
           const viberNumber = normalizePHMobileNumber(seller.viber_number);
 
@@ -120,36 +125,37 @@
               class="seller-contact-btn"
               href="viber://chat?number=${viberNumber}"
             >
-              Viber
+              Try Viber
             </a>
           `);
         }
+        */
 
         if (isValidUrl(seller.tiktok_url)) {
           buttons.push(`
-            <a
-              class="seller-contact-btn"
-              href="${seller.tiktok_url}"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              TikTok
-            </a>
-          `);
+                  <a
+                    class="seller-contact-btn"
+                    href="${seller.tiktok_url}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    TikTok
+                  </a>
+                `);
         }
 
         if (buttons.length === 0) return "";
 
         return `
-        <div class="seller-contact-box">
-            <div class="seller-contact-title">
-              ${sellerName ? `Contact ${sellerName}` : "Need help with this order?"}
-            </div>
-            <div class="seller-contact-actions">
-              ${buttons.join("")}
-            </div>
-          </div>
-        `;
+              <div class="seller-contact-box">
+                  <div class="seller-contact-title">
+                    ${sellerName ? `Contact ${sellerName}` : "Need help with this order?"}
+                  </div>
+                  <div class="seller-contact-actions">
+                    ${buttons.join("")}
+                  </div>
+                </div>
+              `;
       }
 
       let reviewFormOpen = false;
@@ -194,34 +200,34 @@
         formBox.className = "review-form-box";
 
         formBox.innerHTML = `
-          <h4>Review ${productName}</h4>
+                <h4>Review ${productName}</h4>
 
-          <label>
-            Rating
-            <select id="reviewRating">
-              <option value="">Select rating</option>
-              <option value="5">★★★★★ Excellent</option>
-              <option value="4">★★★★ Good</option>
-              <option value="3">★★★ Okay</option>
-              <option value="2">★★ Poor</option>
-              <option value="1">★ Bad</option>
-            </select>
-          </label>
+                <label>
+                  Rating
+                  <select id="reviewRating">
+                    <option value="">Select rating</option>
+                    <option value="5">★★★★★ Excellent</option>
+                    <option value="4">★★★★ Good</option>
+                    <option value="3">★★★ Okay</option>
+                    <option value="2">★★ Poor</option>
+                    <option value="1">★ Bad</option>
+                  </select>
+                </label>
 
-          <label>
-            Comment
-            <textarea
-              id="reviewComment"
-              rows="3"
-              placeholder="Write a short product review"
-            ></textarea>
-          </label>
+                <label>
+                  Comment
+                  <textarea
+                    id="reviewComment"
+                    rows="3"
+                    placeholder="Write a short product review"
+                  ></textarea>
+                </label>
 
-          <div class="review-form-actions">
-            <button type="button" id="submitReviewBtn">Submit Review</button>
-            <button type="button" id="cancelReviewBtn">Cancel</button>
-          </div>
-        `;
+                <div class="review-form-actions">
+                  <button type="button" id="submitReviewBtn">Submit Review</button>
+                  <button type="button" id="cancelReviewBtn">Cancel</button>
+                </div>
+              `;
 
         buttonEl.closest(".review-action-wrap").appendChild(formBox);
 
@@ -271,10 +277,10 @@
               if (error.code === "23505") {
                 alert("You already submitted a review for this product.");
                 formBox.innerHTML = `
-                  <p class="review-success-message">
-                    You already submitted a review for this product.
-                  </p>
-                `;
+                        <p class="review-success-message">
+                          You already submitted a review for this product.
+                        </p>
+                      `;
                 return;
               }
 
@@ -283,10 +289,10 @@
             }
 
             formBox.innerHTML = `
-            <p class="review-success-message">
-              Review submitted. Waiting for seller approval.
-            </p>
-          `;
+                  <p class="review-success-message">
+                    Review submitted. Waiting for seller approval.
+                  </p>
+                `;
           });
       }
 
@@ -298,10 +304,10 @@
 
         if (isNaN(orderNumberInt)) {
           resDiv.innerHTML = `
-            <div class="track-message">
-              Please enter a valid numeric Order #.
-            </div>
-          `;
+                  <div class="track-message">
+                    Please enter a valid numeric Order #.
+                  </div>
+                `;
           return;
         }
 
@@ -309,14 +315,14 @@
           .from("orders")
           .select(
             `
-            id,
-            seller_id,
-            buyer_id,
-            order_number,
-            status,
-            order_amt,
-            created_at
-          `,
+                  id,
+                  seller_id,
+                  buyer_id,
+                  order_number,
+                  status,
+                  order_amt,
+                  created_at
+                `,
           )
           .eq("order_number", orderNumberInt)
           .maybeSingle();
@@ -324,20 +330,20 @@
         if (error) {
           console.error("Supabase Error:", error);
           resDiv.innerHTML = `
-            <div class="track-message">
-              Database error occurred.
-            </div>
-          `;
+                  <div class="track-message">
+                    Database error occurred.
+                  </div>
+                `;
           return;
         }
 
         // Check if order exists
         if (!order) {
           resDiv.innerHTML = `
-            <div class="track-message">
-              Order not found. Please check the number and try again.
-            </div>
-          `;
+                  <div class="track-message">
+                    Order not found. Please check the number and try again.
+                  </div>
+                `;
           return;
         }
 
@@ -346,17 +352,17 @@
           .from("order_items")
           .select(
             `
-            id,
-            order_id,
-            product_id,
-            quantity,
-            price,
-            products (
-              id,
-              name,
-              seller_id
-            )
-          `,
+                  id,
+                  order_id,
+                  product_id,
+                  quantity,
+                  price,
+                  products (
+                    id,
+                    name,
+                    seller_id
+                  )
+                `,
           )
           .eq("order_id", order.id);
 
@@ -399,13 +405,13 @@
             .from("sellers")
             .select(
               `
-              user_id,
-              full_name,
-              contact_number,
-              messenger_url,
-              viber_number,
-              tiktok_url
-            `,
+                    user_id,
+                    full_name,
+                    contact_number,
+                    messenger_url,
+                    viber_number,
+                    tiktok_url
+                  `,
             )
             .in("user_id", sellerIds);
 
@@ -433,50 +439,50 @@
                 const alreadyReviewed = reviewedProductIds.has(item.product_id);
 
                 return `
-                  <tr class="track-item-row">
-                    <td>${index + 1}</td>
-                    <td>
-                      ${product?.name || "Item"}
+                        <tr class="track-item-row">
+                          <td>${index + 1}</td>
+                          <td>
+                            ${product?.name || "Item"}
 
-                      ${
-                        canReview && !alreadyReviewed
-                          ? `
-                            <div class="review-action-wrap">
-                              <button
-                                type="button"
-                                class="leave-review-btn"
-                                data-product-id="${item.product_id}"
-                                data-order-id="${order.id}"
-                                data-product-name="${product?.name || "Item"}"
-                              >
-                                Leave Review
-                              </button>
-                            </div>
-                          `
-                          : canReview && alreadyReviewed
-                            ? `
-                              <div class="review-action-wrap">
-                                <span class="review-submitted-note">
-                                  Review already submitted.
-                                </span>
-                              </div>
-                            `
-                            : ""
-                      }
+                            ${
+                              canReview && !alreadyReviewed
+                                ? `
+                                  <div class="review-action-wrap">
+                                    <button
+                                      type="button"
+                                      class="leave-review-btn"
+                                      data-product-id="${item.product_id}"
+                                      data-order-id="${order.id}"
+                                      data-product-name="${product?.name || "Item"}"
+                                    >
+                                      Leave Review
+                                    </button>
+                                  </div>
+                                `
+                                : canReview && alreadyReviewed
+                                  ? `
+                                    <div class="review-action-wrap">
+                                      <span class="review-submitted-note">
+                                        Review already submitted.
+                                      </span>
+                                    </div>
+                                  `
+                                  : ""
+                            }
 
-                    </td>
-                    <td>${qty}</td>
-                    <td>₱${price.toLocaleString()}</td>
-                    <td>₱${subtotal.toLocaleString()}</td>
-                  </tr>
-                `;
+                          </td>
+                          <td>${qty}</td>
+                          <td>₱${price.toLocaleString()}</td>
+                          <td>₱${subtotal.toLocaleString()}</td>
+                        </tr>
+                      `;
               })
               .join("")
           : `
-              <tr>
-                <td colspan="5">No items found.</td>
-              </tr>
-            `;
+                    <tr>
+                      <td colspan="5">No items found.</td>
+                    </tr>
+                  `;
         const orderSellerId =
           order.seller_id || orderItems?.[0]?.products?.seller_id;
         const orderSeller = sellersByUserId[orderSellerId];
@@ -484,64 +490,64 @@
         const sellerContactHtml = renderSellerContactButtons(orderSeller);
 
         resDiv.innerHTML = `
-          <div class="order-result-card">
-            <h3>Order #${order.order_number}</h3>
+                <div class="order-result-card">
+                  <h3>Order #${order.order_number}</h3>
 
-            <table class="track-summary-table">
-              <tbody>
-                <tr>
-                  <th>Status</th>
-                  <td>
-                    <span class="status-badge ${order.status}">
-                      ${order.status}
-                    </span>
-                  </td>
-                </tr>
-                <tr>
-                  <th>Total</th>
-                  <td>₱${Number(order.order_amt || 0).toLocaleString()}</td>
-                </tr>
-                <tr>
-                  <th>Date</th>
-                  <td>${new Date(order.created_at).toLocaleDateString()}</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <h4 style="margin-top: 18px;">Order Items</h4>
-            ${
-              hasItems && !canReview
-                ? `<p class="review-locked-note">Reviews become available after this order is marked completed.</p>`
-                : ""
-            }
-            <table class="track-items-table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Product</th>
-                  <th>Qty</th>
-                  <th>Price</th>
-                  <th>Subtotal</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${itemsHtml}
-
-                ${
-                  sellerContactHtml
-                    ? `
-                      <tr class="seller-contact-row">
-                        <td colspan="5" class="seller-contact-cell">
-                          ${sellerContactHtml}
+                  <table class="track-summary-table">
+                    <tbody>
+                      <tr>
+                        <th>Status</th>
+                        <td>
+                          <span class="status-badge ${order.status}">
+                            ${order.status}
+                          </span>
                         </td>
                       </tr>
-                    `
-                    : ""
-                }
-              </tbody>  
-            </table>
-          </div>
-        `;
+                      <tr>
+                        <th>Total</th>
+                        <td>₱${Number(order.order_amt || 0).toLocaleString()}</td>
+                      </tr>
+                      <tr>
+                        <th>Date</th>
+                        <td>${new Date(order.created_at).toLocaleDateString()}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <h4 style="margin-top: 18px;">Order Items</h4>
+                  ${
+                    hasItems && !canReview
+                      ? `<p class="review-locked-note">Reviews become available after this order is marked completed.</p>`
+                      : ""
+                  }
+                  <table class="track-items-table">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Product</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Subtotal</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${itemsHtml}
+
+                      ${
+                        sellerContactHtml
+                          ? `
+                            <tr class="seller-contact-row">
+                              <td colspan="5" class="seller-contact-cell">
+                                ${sellerContactHtml}
+                              </td>
+                            </tr>
+                          `
+                          : ""
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              `;
         resDiv.onclick = async (e) => {
           const btn = e.target.closest(".leave-review-btn");
           if (!btn) return;
