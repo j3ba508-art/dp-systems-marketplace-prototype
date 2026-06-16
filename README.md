@@ -43,6 +43,26 @@ Completed core flows:
 
 ---
 
+## Key Selling Points
+
+- Supabase-backed multi-seller marketplace prototype
+- Guest buyer checkout without full buyer login
+- Multi-seller cart splitting into seller-specific orders
+- PostgreSQL RPC checkout transaction for safer stock/order handling
+- Seller login and onboarding with Supabase Auth
+- Seller dashboard for products, orders, and reviews
+- Product CRUD with image handling and stock management
+- Order tracking by order number
+- Buyer reviews with seller moderation
+- Approved reviews displayed publicly
+- Real Android device QA
+- Chrome DevTools remote debugging through `chrome://inspect`
+- Android Back navigation/history fixes with `pushState` / `popstate`
+- Mobile landscape scroll, keyboard, and cart FAB fixes
+- Contact-link QA: Call/Text, Messenger, TikTok passed; Viber hidden pending reliable format
+
+---
+
 ## Tech Stack
 
 ### Frontend
