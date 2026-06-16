@@ -1,7 +1,6 @@
 import { supabase } from "./supabaseClient.js";
 import { initProductOverlay, openProductOverlay } from "./productOverlay.js";
 
-console.log("🔥 products.js LOADED");
 
 const IS_DEV_MODE = false;
 const MOCK_SELLER_ID = "e46d0f68-6b7d-49b1-9caa-21e158bcbf72";
@@ -10,7 +9,6 @@ let currentSellerId = null;
 let cachedProducts = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
-  console.log("🔥 DOM READY");
   const sellerId = await getSellerId();
   currentSellerId = sellerId;
 
@@ -36,7 +34,6 @@ async function getSellerId() {
 }
 
 async function loadSellerProducts() {
-  console.log("🔥 loadSellerProducts RUNNING");
   const grid = document.getElementById("productGrid");
   const counter = document.getElementById("product-count");
 
@@ -58,15 +55,6 @@ async function loadSellerProducts() {
   counter.innerText = data.length;
 
   cachedProducts = data;
-
-  console.table(
-    data.map((p, index) => ({
-      index,
-      name: p.name,
-      created_at: p.created_at,
-      id: p.id,
-    })),
-  );
 
   renderGrid(data);
 }

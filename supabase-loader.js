@@ -9,4 +9,3 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 // Attach globally for non-module scripts
 window.supabaseClient = supabase;
 
-console.log("Supabase READY");

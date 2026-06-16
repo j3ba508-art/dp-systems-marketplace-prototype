@@ -127,7 +127,6 @@
         } = await supabase.auth.getUser();
 
         if (!user || userError) {
-          console.log("No session found. Redirecting to login.");
           window.location.replace("./seller-login.html");
           return;
         }

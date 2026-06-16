@@ -5,7 +5,6 @@ export async function checkAuthAndOnboarding() {
   const path = window.location.pathname;
 
   if (path.includes("seller-login.html")) {
-    console.log("Guard: On login page, ignoring guard.");
     return; // Stop here, do not run the rest of the guard
   }
 
@@ -42,5 +41,4 @@ export async function checkAuthAndOnboarding() {
   }
   // If we reached here, they are a seller and on a valid page.
   document.body.style.display = "flex";
-  console.log("Welcome, Seller!");
 }
