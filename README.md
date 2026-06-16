@@ -240,9 +240,8 @@ Mobile QA included:
 
 Remote debugging used:
 
-```text
 chrome://inspect
-```
+
 
 The Android device was connected through USB debugging so live mobile tabs could be inspected from desktop Chrome DevTools.
 
@@ -270,13 +269,11 @@ Key techniques used:
 
 Expected Seller Hub behavior:
 
-```text
 Stats → Products → Orders → Reviews
 Back → Orders
 Back → Products
 Back → Stats
 Back → normal browser/app exit
-```
 
 ---
 
@@ -315,12 +312,10 @@ The final seller identity model uses the `sellers` table as the true seller reco
 
 Relationship flow:
 
-```text
 auth.users.id
 → profiles.id
 → sellers.user_id
 → sellers.id
-```
 
 Important rules:
 
@@ -461,43 +456,6 @@ Future enhancements may include:
 - notifications for order status changes
 - Google Maps pickup/meetup location support
 - Viber compatibility review
-
----
-
-## Development Notes
-
-Recommended cleanup before final deployment:
-
-- remove temporary debug logs
-- remove debug alerts
-- keep useful `console.error` logs
-- keep Viber compatibility comment
-- lightly clean duplicate CSS only after regression testing
-- avoid adding new features before final deploy
-
-Final regression checklist:
-
-- buyer marketplace
-- cart with items
-- empty cart
-- checkout
-- order tracking
-- review submission
-- seller review approval/hide
-- approved review display
-- seller dashboard sections
-- Android Back behavior
-- desktop browser Back behavior
-- mobile portrait
-- mobile landscape
-
----
-
-## Security Notes
-
-Do not commit any Supabase service-role key.
-
-A public Supabase anon key may appear in browser-based frontend code, but service-role keys and private credentials must remain outside the public repository.
 
 ---
 
