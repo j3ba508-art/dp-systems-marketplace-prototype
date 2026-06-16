@@ -43,6 +43,17 @@ Completed core flows:
 
 ---
 
+## What Makes This More Than a UI Demo
+
+- Multi-seller checkout splits one cart into seller-specific orders.
+- Checkout uses Supabase/PostgreSQL RPC logic for safer stock/order handling.
+- Seller identity is mapped through Auth → profiles → sellers.
+- Reviews require completed orders and seller moderation before public display.
+- Android Back navigation, mobile landscape, keyboard behavior, and contact deep links were tested on a real phone.
+- Chrome DevTools remote debugging was used through `chrome://inspect`.
+
+---
+
 ## Key Selling Points
 
 - Supabase-backed multi-seller marketplace prototype
